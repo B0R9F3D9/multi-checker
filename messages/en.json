@@ -1,0 +1,60 @@
+{
+	"HomePage": {
+		"title": "Select checker below",
+		"goToChecker": "Go to checker",
+		"comingSoon": "Coming soon"
+	},
+	"Header": {
+		"toggleTheme": "Switch theme"
+	},
+	"Footer": {
+		"link": "Made with ❤️ by B0R9F3D9"
+	},
+	"LocaleSwitcher": {
+		"label": "Change language"
+	},
+	"NotFoundPage": {
+		"title": "Error",
+		"message": "Page not found"
+	},
+	"CheckerPage": {
+		"addressesPlaceholder": "Insert wallet addresses divided by line, comma, semicolon, tab or space",
+		"checkBtn": "Check",
+		"columns": "Columns",
+		"settings": "Settings",
+		"copyToast": "Copied to clipboard",
+		"rowsPerPage": "Rows per page",
+		"goToFirstPage": "Go to first page",
+		"concurrentFetches": "Number of concurrent requests by address",
+		"concurrentWallets": "Number of concurrently checked wallets",
+		"page": "Page",
+		"of": "of",
+		"goToPreviousPage": "Go to previous page",
+		"goToNextPage": "Go to next page",
+		"goToLastPage": "Go to last page",
+		"noData": "No data",
+		"address": "Address",
+		"txns": "Transactions",
+		"volume": "Volume",
+		"days": "Days",
+		"weeks": "Weeks",
+		"months": "Months",
+		"firstTxnDate": "First transaction date",
+		"lastTxnDate": "Last transaction date",
+		"actions": "Actions",
+		"id": "№",
+		"protocols": "Protocols",
+		"contracts": "Contracts",
+		"addressesPlaceholderDisabled": "First enable address display by clicking on the header in the table",
+		"domain": "Domain",
+		"balance": "Balance",
+		"fee": "Gas spent",
+		"srcChains": "Source chains",
+		"dstChains": "Destination chains"
+	},
+	"Projects": {
+		"LayerZero": {
+			"warning": "WARNING: Due to the peculiarities of API LayerZeroScan in the table shows data only on the last 100 transactions of the wallet (the number of transactions is shown correctly). And also transactions are counted from 01-05-2024, the snapshot date."
+		}
+	}
+}
