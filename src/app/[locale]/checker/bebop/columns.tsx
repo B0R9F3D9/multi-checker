@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import type { Toast } from '@/hooks/use-toast';
 import type { DateFrame } from '@/types/wallet';
 
-import type { OdosWallet } from './types';
+import type { BebopWallet } from './types';
 
 export function getColumns(
 	toast: (options: Toast) => {
@@ -25,7 +25,7 @@ export function getColumns(
 	recheckWallet: (address: string) => Promise<void>,
 	deleteWallet: (address: string) => void,
 	t: (t: string) => string,
-): ColumnDef<OdosWallet>[] {
+): ColumnDef<BebopWallet>[] {
 	return [
 		{
 			accessorKey: 'id',
@@ -91,14 +91,14 @@ export function getColumns(
 			cell: ({ row }) =>
 				getCellComponent('chains', row.getValue, getChainsComponent),
 		},
-		...['days', 'weeks', 'months'].map<ColumnDef<OdosWallet>>(
+		...['days', 'weeks', 'months'].map<ColumnDef<BebopWallet>>(
 			(dateFrame: string) => ({
 				accessorKey: dateFrame,
 				header: ({ column }) => getHeaderComponent(dateFrame, column, t),
 				cell: ({ row }) =>
 					getCellComponent(dateFrame, row.getValue, (data: DateFrame) =>
 						getDatesComponent(
-							new Date('2024-12-16'),
+							new Date('2022-06-09'),
 							data,
 							dateFrame as 'weeks' | 'days' | 'months',
 						),

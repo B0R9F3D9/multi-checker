@@ -11,9 +11,9 @@ const nextConfig: NextConfig = {
 		remotePatterns: [
 			{
 				protocol: 'https',
-				hostname: 'assets.odos.xyz',
+				hostname: 'icons.llamao.fi',
 				port: '',
-				pathname: '/chains/**',
+				pathname: '/icons/chains/**',
 				search: '',
 			},
 		],

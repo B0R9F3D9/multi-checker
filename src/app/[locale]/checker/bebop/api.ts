@@ -4,51 +4,38 @@ import { format } from 'date-fns';
 import { promiseAll } from '@/lib/utils';
 import type { Wallet } from '@/types/wallet';
 
-import type { OdosTxn, OdosTxnResponse, OdosWallet } from './types';
+import type { BebopTxn, BebopTxnResponse, BebopWallet } from './types';
 
-async function getTxns(
-	address: string,
-	page: number,
-): Promise<OdosTxnResponse> {
-	const resp = await axios.get<OdosTxnResponse>(
-		`https://api.odos.xyz/transaction-history/${address}`,
+async function getTxns(address: string): Promise<BebopTxn[]> {
+	const resp = await axios.get<BebopTxnResponse>(
+		`https://api.bebop.xyz/history/v2/trades`,
 		{
 			params: {
-				page,
+				start: new Date('2022-06-09').getTime() * 1000000,
+				end: new Date().getTime() * 1000000,
+				size: 100000,
+				wallet_address: address,
 			},
 		},
 	);
 
-	return resp.data!;
+	return resp.data.results!;
 }
 
-function processTxns(txns: OdosTxn[]): Partial<OdosWallet> {
-	txns = txns.filter(
-		txn => new Date(txn.block_time).getTime() > new Date('2024-12-16').getTime(),
-	);
-
+function processTxns(txns: BebopTxn[]): Partial<BebopWallet> {
 	const result = {
 		txns: txns.length,
 		volume: 0,
-		tokens: 0,
 		chains: [{ id: 0, txns: 0 }],
 		days: [{ date: '', txns: 0 }],
 		weeks: [{ date: '', txns: 0 }],
 		months: [{ date: '', txns: 0 }],
 	};
 
-	const tokensSet = new Set<string>();
-
 	for (const txn of txns) {
-		for (const input of txn.inputs) {
-			result.volume += input.amount_usd;
-			tokensSet.add(input.token_address);
-		}
-		for (const output of txn.outputs) {
-			tokensSet.add(output.token_address);
-		}
+		result.volume += txn.volumeUsd;
 
-		const txnDate = new Date(txn.block_time);
+		const txnDate = new Date(txn.timestamp);
 
 		const day = result.days.find(
 			day => day.date === format(txnDate, 'yyyy-MM-dd'),
@@ -76,53 +63,15 @@ function processTxns(txns: OdosTxn[]): Partial<OdosWallet> {
 	result.days = result.days.filter(item => item.date !== '');
 	result.weeks = result.weeks.filter(item => item.date !== '');
 	result.months = result.months.filter(item => item.date !== '');
-	result.chains = result.chains.filter(item => item.id !== 0);
-	result.tokens = tokensSet.size;
+	result.chains = result.chains
+		.filter(item => item.id !== 0)
+		.sort((a, b) => b.txns - a.txns);
 
 	return result;
 }
 
 async function fetchWallet(address: string, concurrentFetches: number) {
-	let txnsCount, txns, result;
-	try {
-		const init_request = await getTxns(address, 1);
-		txnsCount = init_request.totalCount - init_request.transactions.length;
-		txns = init_request.transactions;
-	} catch (err) {
-		txnsCount = null;
-		console.error(err);
-	}
-	try {
-		if (txnsCount && txnsCount > 0) {
-			const pages = Math.ceil(txnsCount / 10); // 10 txns per page
-			const requests = [];
-			for (let i = 2; i <= pages + 1; i++) {
-				requests.push(() => getTxns(address, i));
-			}
-
-			const responses = await promiseAll(requests, concurrentFetches);
-			responses.forEach(response => {
-				txns.push(...response.transactions);
-			});
-		}
-	} catch (err) {
-		txns = null;
-		console.error(err);
-	}
-	try {
-		if (txns) result = processTxns(txns);
-	} catch (err) {
-		result = {
-			txns: null,
-			volume: null,
-			fee: null,
-			days: null,
-			weeks: null,
-			months: null,
-		};
-		console.error(err);
-	}
-	return { ...result };
+	return processTxns(await getTxns(address));
 }
 
 export async function fetchWallets(
@@ -142,7 +91,6 @@ export async function fetchWallets(
 				updateWallet(address, {
 					txns: null,
 					chains: null,
-					tokens: null,
 					volume: null,
 					days: null,
 					weeks: null,

@@ -4,8 +4,8 @@ export type OdosWallet = {
 	id: number;
 	address: string;
 	txns?: number | null;
-	chains?: { id: number; txns: number }[];
-	tokens?: number;
+	chains?: { id: number; txns: number }[] | null;
+	tokens?: number | null;
 	volume?: number | null;
 	days?: DateFrame | null;
 	weeks?: DateFrame | null;
