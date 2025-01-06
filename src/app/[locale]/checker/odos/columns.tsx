@@ -3,18 +3,17 @@ import * as React from 'react';
 import { LuCopy, LuEyeOff, LuRotateCcw, LuTrash } from 'react-icons/lu';
 
 import {
-	getActionButton,
 	getCellComponent,
 	getDatesComponent,
+	getDebankButton,
 	getHeaderComponent,
-	getSolscanButton,
 } from '@/components/data-table/utils';
 import { Button } from '@/components/ui/button';
-import { ACTION_LINKS } from '@/constants';
 import type { Toast } from '@/hooks/use-toast';
 import type { DateFrame } from '@/types/wallet';
 
-import type { EclipseWallet } from './types';
+import { getChainsComponent } from './chains';
+import type { OdosWallet } from './types';
 
 export function getColumns(
 	toast: (options: Toast) => {
@@ -26,7 +25,7 @@ export function getColumns(
 	recheckWallet: (address: string) => Promise<void>,
 	deleteWallet: (address: string) => void,
 	t: (t: string) => string,
-): ColumnDef<EclipseWallet>[] {
+): ColumnDef<OdosWallet>[] {
 	return [
 		{
 			accessorKey: 'id',
@@ -71,46 +70,9 @@ export function getColumns(
 			),
 		},
 		{
-			accessorKey: 'domain',
-			header: () => {
-				return (
-					<div className="text-center">
-						<Button
-							variant="ghost"
-							onClick={() => setShowAddresses(!showAddresses)}
-						>
-							{t('domain')}
-							<LuEyeOff />
-						</Button>
-					</div>
-				);
-			},
-			cell: ({ row }) =>
-				getCellComponent('domain', row.getValue, (domain: string) =>
-					showAddresses
-						? domain
-						: domain &&
-							domain.split('.turbo')[0].slice(0, 2) +
-								'...' +
-								domain.split('.turbo')[0].slice(-2) +
-								'.turbo',
-				),
-		},
-		{
 			accessorKey: 'txns',
 			header: ({ column }) => getHeaderComponent('txns', column, t),
 			cell: ({ row }) => getCellComponent('txns', row.getValue),
-		},
-		{
-			accessorKey: 'balance',
-			header: ({ column }) => getHeaderComponent('balance', column, t),
-			cell: ({ row }) =>
-				getCellComponent('balance', row.getValue, (value: number) =>
-					new Intl.NumberFormat('en-US', {
-						style: 'currency',
-						currency: 'USD',
-					}).format(value),
-				),
 		},
 		{
 			accessorKey: 'volume',
@@ -124,24 +86,19 @@ export function getColumns(
 				),
 		},
 		{
-			accessorKey: 'fee',
-			header: ({ column }) => getHeaderComponent('fee', column, t),
+			accessorKey: 'chains',
+			header: ({ column }) => getHeaderComponent('chains', column, t),
 			cell: ({ row }) =>
-				getCellComponent('fee', row.getValue, (value: number) =>
-					new Intl.NumberFormat('en-US', {
-						style: 'currency',
-						currency: 'USD',
-					}).format(value),
-				),
+				getCellComponent('chains', row.getValue, getChainsComponent),
 		},
-		...['days', 'weeks', 'months'].map<ColumnDef<EclipseWallet>>(
+		...['days', 'weeks', 'months'].map<ColumnDef<OdosWallet>>(
 			(dateFrame: string) => ({
 				accessorKey: dateFrame,
 				header: ({ column }) => getHeaderComponent(dateFrame, column, t),
 				cell: ({ row }) =>
 					getCellComponent(dateFrame, row.getValue, (data: DateFrame) =>
 						getDatesComponent(
-							new Date('2024-10-01'),
+							new Date('2024-12-16'),
 							data,
 							dateFrame as 'weeks' | 'days' | 'months',
 						),
@@ -153,12 +110,7 @@ export function getColumns(
 			header: () => <div className="text-center">{t('actions')}</div>,
 			cell: ({ row }) => (
 				<div className="flex justify-center items-center gap-1">
-					{getActionButton(
-						row.getValue('address'),
-						ACTION_LINKS.eclipsescan,
-						'/eclipse.webp',
-					)}
-					{getSolscanButton(row.getValue('address'))}
+					{getDebankButton(row.getValue('address'))}
 					<Button
 						className="cursor-pointer w-7 h-7"
 						variant="ghost"

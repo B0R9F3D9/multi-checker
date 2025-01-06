@@ -6,7 +6,7 @@ import { FaDiscord } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
 
 import { Button } from '@/components/ui/button';
-import { PROJECTS } from '@/constants/projects';
+import { PROJECTS } from '@/constants';
 import { Link } from '@/i18n/routing';
 import { Card, CardFooter, CardHeader, CardTitle } from '@/ui/card';
 

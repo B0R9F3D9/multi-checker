@@ -9,9 +9,8 @@ import { SettingsDialog } from '@/components/data-table/SettingsDialog';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Textarea } from '@/components/ui/textarea';
-import { getProject } from '@/constants/projects';
 import { useToast } from '@/hooks/use-toast';
-import { splitAddresses } from '@/lib/utils';
+import { getProject, splitAddresses } from '@/lib/utils';
 import { useCheckerStore } from '@/stores/checkerStore';
 
 import { fetchWallets } from './api';
@@ -47,6 +46,7 @@ export default function CheckerPage() {
 	}
 
 	useEffect(() => {
+		setWallets([]);
 		setFetchWallets(fetchWallets);
 	}, []);
 

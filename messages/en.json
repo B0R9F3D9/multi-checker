@@ -50,11 +50,13 @@
 		"balance": "Balance",
 		"fee": "Gas spent",
 		"srcChains": "Source chains",
-		"dstChains": "Destination chains"
+		"dstChains": "Destination chains",
+		"chains": "Chains",
+		"tokens": "Tokens"
 	},
 	"Projects": {
 		"LayerZero": {
-			"warning": "WARNING: Due to the peculiarities of API LayerZeroScan in the table shows data only on the last 100 transactions of the wallet (the number of transactions is shown correctly). And also transactions are counted from 01-05-2024, the snapshot date."
+			"description": "WARNING: Due to the peculiarities of API LayerZeroScan in the table shows data only on the last 100 transactions of the wallet (the number of transactions is shown correctly). And also transactions are counted from 01-05-2024, the snapshot date."
 		}
 	}
 }

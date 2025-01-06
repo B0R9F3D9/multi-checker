@@ -9,11 +9,12 @@ import {
 	HoverCardContent,
 	HoverCardTrigger,
 } from '@/components/ui/hover-card';
+import { ACTION_LINKS } from '@/constants';
 import type { DateFrame } from '@/types/wallet';
 
 import { Skeleton } from '../ui/skeleton';
 
-export function getDebankButton(address: string) {
+export function getActionButton(address: string, link: string, image: string) {
 	return (
 		<Button
 			className="cursor-pointer w-7 h-7"
@@ -21,14 +22,10 @@ export function getDebankButton(address: string) {
 			size="icon"
 			asChild
 		>
-			<a
-				href={`https://debank.com/profile/${address}`}
-				target="_blank"
-				rel="noreferrer"
-			>
+			<a href={link + address} target="_blank" rel="noreferrer">
 				<Image
-					src="/debank.svg"
-					alt="debank"
+					src={image}
+					alt=""
 					width={28}
 					height={28}
 					className="rounded-md"
@@ -38,29 +35,12 @@ export function getDebankButton(address: string) {
 	);
 }
 
+export function getDebankButton(address: string) {
+	return getActionButton(address, ACTION_LINKS.debank, '/debank.svg');
+}
+
 export function getSolscanButton(address: string) {
-	return (
-		<Button
-			className="cursor-pointer w-7 h-7"
-			variant="ghost"
-			size="icon"
-			asChild
-		>
-			<a
-				href={`https://solscan.io/account/${address}`}
-				target="_blank"
-				rel="noreferrer"
-			>
-				<Image
-					src="/solscan.png"
-					alt="solscan"
-					width={28}
-					height={28}
-					className="rounded-md"
-				/>
-			</a>
-		</Button>
-	);
+	return getActionButton(address, ACTION_LINKS.solscan, '/solscan.png');
 }
 
 export function getCellComponent<T>(
@@ -174,32 +154,22 @@ export function getDatesComponent(
 					<MdTouchApp />
 				</p>
 			</HoverCardTrigger>
-			<HoverCardContent
-				className="p-4 rounded-lg shadow-md"
-				style={{
-					maxWidth: '40vw',
-					maxHeight: '40vh',
-					overflow: 'auto',
-				}}
-			>
-				<div className="flex flex-col gap-4 justify-center items-center">
+			<HoverCardContent className="p-4 rounded-lg shadow-md w-min max-h-[40vh] overflow-auto">
+				<div className="flex flex-col gap-3 justify-center items-center w-fit max-w-full">
 					{Object.entries(months).map(([monthLabel, periods]) => {
 						return (
 							<div
 								key={monthLabel}
-								style={{ display: 'flex', alignItems: 'center', width: '100%' }}
+								className="flex flex-row items-center gap-3 w-full"
 							>
-								<h3
-									className="text-lg font-semibold text-left"
-									style={{ flex: '1' }}
-								>
+								<h3 className="text-base text-left truncate max-w-[6rem]">
 									{monthLabel}
 								</h3>
 								<div
-									className="grid gap-2"
+									className="grid gap-2 w-fit max-w-full"
 									style={{
 										gridTemplateColumns: `repeat(${Math.min(7, periods.length)}, minmax(1rem, 1fr))`,
-										justifyContent: format === 'days' ? 'start' : 'center',
+										justifyContent: 'center',
 										alignItems: 'center',
 										flexShrink: 0,
 									}}

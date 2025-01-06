@@ -1,15 +1,16 @@
 import type { ColumnDef } from '@tanstack/react-table';
-import Image from 'next/image';
 import * as React from 'react';
 import { LuCopy, LuEyeOff, LuRotateCcw, LuTrash } from 'react-icons/lu';
 
 import {
+	getActionButton,
 	getCellComponent,
 	getDatesComponent,
 	getDebankButton,
 	getHeaderComponent,
 } from '@/components/data-table/utils';
 import { Button } from '@/components/ui/button';
+import { ACTION_LINKS } from '@/constants';
 import type { Toast } from '@/hooks/use-toast';
 import type { DateFrame } from '@/types/wallet';
 
@@ -119,26 +120,11 @@ export function getColumns(
 			header: () => <div className="text-center">{t('actions')}</div>,
 			cell: ({ row }) => (
 				<div className="flex justify-center items-center gap-1">
-					<Button
-						className="cursor-pointer w-7 h-7"
-						variant="ghost"
-						size="icon"
-						asChild
-					>
-						<a
-							href={`https://layerzeroscan.com/address/${row.getValue('address')}`}
-							target="_blank"
-							rel="noreferrer"
-						>
-							<Image
-								src="/layerzero.webp"
-								alt="layerzero-scan"
-								width={28}
-								height={28}
-								className="rounded-md"
-							/>
-						</a>
-					</Button>
+					{getActionButton(
+						row.getValue('address'),
+						ACTION_LINKS.layerzeroscan,
+						'/layerzero.webp',
+					)}
 					{getDebankButton(row.getValue('address'))}
 					<Button
 						className="cursor-pointer w-7 h-7"

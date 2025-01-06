@@ -1,6 +1,8 @@
 import axios from 'axios';
 import { type ClassValue, clsx } from 'clsx';
 
+import { PROJECTS } from '@/constants';
+
 export function cn(...inputs: ClassValue[]) {
 	return clsx(inputs);
 }
@@ -60,4 +62,8 @@ export async function getEthPrice(): Promise<number> {
 		params: { symbol: 'ETHUSDT' },
 	});
 	return parseFloat(resp.data.price!);
+}
+
+export function getProject(name: string) {
+	return PROJECTS.find(project => project.name.toLowerCase() === name);
 }

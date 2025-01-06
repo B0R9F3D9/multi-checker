@@ -11,8 +11,6 @@ export type LayerzeroWallet = {
 	dstChains?: { name: string; txns: number }[] | null;
 	protocols?: { id: string; name: string; txns: number }[] | null;
 	contracts?: number | null;
-	firstTxnTimestamp?: number | null;
-	lastTxnTimestamp?: number | null;
 };
 
 export type LayerzeroTxn = {

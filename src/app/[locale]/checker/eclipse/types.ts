@@ -11,8 +11,6 @@ export type EclipseWallet = {
 	days?: DateFrame | null;
 	weeks?: DateFrame | null;
 	months?: DateFrame | null;
-	firstTxnTimestamp?: number | null;
-	lastTxnTimestamp?: number | null;
 };
 
 export type EclipseTxn = {

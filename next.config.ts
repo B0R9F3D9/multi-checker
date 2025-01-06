@@ -7,6 +7,17 @@ const nextConfig: NextConfig = {
 	experimental: {
 		webpackMemoryOptimizations: true,
 	},
+	images: {
+		remotePatterns: [
+			{
+				protocol: 'https',
+				hostname: 'assets.odos.xyz',
+				port: '',
+				pathname: '/chains/**',
+				search: '',
+			},
+		],
+	},
 };
 
 export default withNextIntl(nextConfig);

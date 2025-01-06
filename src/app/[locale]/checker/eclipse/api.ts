@@ -25,7 +25,7 @@ async function getEthBalance(address: string): Promise<number> {
 
 	if (!resp.data.success || resp.data.errors)
 		throw new Error(resp.data.errors!.message);
-	return resp.data.data!.lamports! / 10 ** 9;
+	return (resp.data.data?.lamports || 0) / 10 ** 9;
 }
 
 async function getDomain(address: string): Promise<string> {
@@ -42,8 +42,7 @@ async function getDomain(address: string): Promise<string> {
 	if (!resp.data.success || resp.data.errors)
 		throw new Error(resp.data.errors!.message);
 
-	if (!resp.data.data?.favorite) return '-';
-	return resp.data.data!.favorite;
+	return resp.data.data?.favorite || '';
 }
 
 async function getTxns(
@@ -76,8 +75,6 @@ function processTxns(
 ): Partial<EclipseWallet> {
 	const result = {
 		txns: txns.length,
-		firstTxnTimestamp: 0,
-		lastTxnTimestamp: 0,
 		volume: 0,
 		fee: 0,
 		days: [{ date: '', txns: 0 }],
@@ -86,11 +83,6 @@ function processTxns(
 	};
 
 	for (const txn of txns) {
-		result.firstTxnTimestamp = Math.min(
-			result.firstTxnTimestamp,
-			txn.blockTime,
-		);
-		result.lastTxnTimestamp = Math.max(result.lastTxnTimestamp, txn.blockTime);
 		result.volume += (parseInt(txn.sol_value) / 10 ** 9) * ethPrice;
 		result.fee += (txn.fee / 10 ** 9) * ethPrice;
 
@@ -150,8 +142,6 @@ async function fetchWallet(
 	} catch (err) {
 		data = {
 			txns: null,
-			firstTxnTimestamp: null,
-			lastTxnTimestamp: null,
 			volume: null,
 			fee: null,
 			days: null,
@@ -174,18 +164,6 @@ export async function fetchWallets(
 	await promiseAll(
 		addresses.map(address => async () => {
 			try {
-				updateWallet(address, {
-					txns: undefined,
-					domain: undefined,
-					balance: undefined,
-					volume: undefined,
-					fee: undefined,
-					days: undefined,
-					weeks: undefined,
-					months: undefined,
-					firstTxnTimestamp: undefined,
-					lastTxnTimestamp: undefined,
-				});
 				const result = await fetchWallet(address, concurrentFetches, ethPrice);
 				updateWallet(address, result);
 			} catch (err) {
@@ -199,8 +177,6 @@ export async function fetchWallets(
 					days: null,
 					weeks: null,
 					months: null,
-					firstTxnTimestamp: null,
-					lastTxnTimestamp: null,
 				});
 			}
 		}),

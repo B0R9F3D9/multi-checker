@@ -1,15 +1,12 @@
 'use client';
 
-import { HoverCard } from '@radix-ui/react-hover-card';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
-import { PiWarningCircle } from 'react-icons/pi';
 
 import { DataTable } from '@/components/data-table/DataTable';
 import { SettingsDialog } from '@/components/data-table/SettingsDialog';
 import { Button } from '@/components/ui/button';
-import { HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 import { Progress } from '@/components/ui/progress';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
@@ -19,11 +16,10 @@ import { useCheckerStore } from '@/stores/checkerStore';
 import { fetchWallets } from './api';
 import { getColumns } from './columns';
 
-const project = getProject('layerzero');
+const project = getProject('odos');
 
 export default function CheckerPage() {
 	const t = useTranslations('CheckerPage');
-	const projectT = useTranslations(`Projects.${project!.name}`);
 	const { toast } = useToast();
 	const {
 		wallets,
@@ -67,19 +63,7 @@ export default function CheckerPage() {
 				width={100}
 				height={100}
 			/>
-			<div className="flex flex-row gap-2">
-				<h1 className="text-2xl font-bold">{project!.name}</h1>
-				{project!.hasDescription ? (
-					<HoverCard>
-						<HoverCardTrigger>
-							<PiWarningCircle size={24} />
-						</HoverCardTrigger>
-						<HoverCardContent>
-							<p>{projectT('description')}</p>
-						</HoverCardContent>
-					</HoverCard>
-				) : null}
-			</div>
+			<h1 className="text-2xl font-bold">{project!.name}</h1>
 			<Textarea
 				rows={5}
 				value={showAddresses ? addresses : t('addressesPlaceholderDisabled')}

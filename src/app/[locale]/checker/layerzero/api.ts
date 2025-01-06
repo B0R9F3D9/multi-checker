@@ -8,8 +8,6 @@ import type { LayerzeroResponse, LayerzeroTxn, LayerzeroWallet } from './types';
 
 function parseResult(txns: LayerzeroTxn[]): Partial<LayerzeroWallet> {
 	const result = {
-		firstTxnTimestamp: 0,
-		lastTxnTimestamp: 0,
 		days: [{ date: '', txns: 0 }],
 		weeks: [{ date: '', txns: 0 }],
 		months: [{ date: '', txns: 0 }],
@@ -59,9 +57,6 @@ function parseResult(txns: LayerzeroTxn[]): Partial<LayerzeroWallet> {
 		);
 		if (dstChain) dstChain.txns += 1;
 		else result.dstChains.push({ name: txn.dstChainKey, txns: 1 });
-
-		result.firstTxnTimestamp = Math.min(result.firstTxnTimestamp, txn.created);
-		result.lastTxnTimestamp = Math.max(result.lastTxnTimestamp, txn.created);
 
 		const date = new Date(txn.created * 1000);
 		const day = result.days.find(
@@ -125,18 +120,6 @@ export async function fetchWallets(
 	await promiseAll(
 		addresses.map(address => async () => {
 			try {
-				updateWallet(address, {
-					txns: undefined,
-					days: undefined,
-					weeks: undefined,
-					months: undefined,
-					srcChains: undefined,
-					dstChains: undefined,
-					protocols: undefined,
-					contracts: undefined,
-					firstTxnTimestamp: undefined,
-					lastTxnTimestamp: undefined,
-				});
 				const result = await fetchWallet(address, concurrentFetches);
 				updateWallet(address, result);
 			} catch (err) {
@@ -150,8 +133,6 @@ export async function fetchWallets(
 					dstChains: null,
 					protocols: null,
 					contracts: null,
-					firstTxnTimestamp: null,
-					lastTxnTimestamp: null,
 				});
 			}
 		}),
