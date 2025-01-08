@@ -2,13 +2,16 @@ import axios from 'axios';
 import { format } from 'date-fns';
 
 import { getEthPrice, promiseAll } from '@/lib/utils';
+import { generateUUID } from '@/lib/utils';
 import type { Wallet } from '@/types/wallet';
 
 import type {
 	EclipseAccount,
 	EclipseDomain,
 	EclipseResponse,
+	EclipseTapsResponse,
 	EclipseTxn,
+	EclipseTxnDetail,
 	EclipseWallet,
 } from './types';
 
@@ -50,7 +53,7 @@ async function getTxns(
 	before?: string,
 ): Promise<EclipseTxn[]> {
 	const resp = await axios.get<EclipseResponse<{ transactions: EclipseTxn[] }>>(
-		// 'https://api.eclipsescan.xyz/v1/account/transactions',
+		// 'https://api.eclipsescan.xyz/v1/account/transaction',
 		'/api/checker/eclipse/transaction',
 		{
 			params: {
@@ -67,6 +70,69 @@ async function getTxns(
 	if (txns.length === 40)
 		return await getTxns(address, txns[txns.length - 1].txHash);
 	return txns;
+}
+
+async function fetchAddressTaps(address: string) {
+	function decodeTaps(str: string) {
+		const decoded = Buffer.from(str, 'base64');
+		const offset = 8;
+		return decoded.readUInt32LE(offset);
+	}
+
+	const resp = await axios.post<EclipseTapsResponse>(
+		'https://eclipse.lgns.net/',
+		{
+			method: 'getAccountInfo',
+			jsonrpc: '2.0',
+			params: [
+				address,
+				{
+					encoding: 'base64',
+					commitment: 'confirmed',
+				},
+			],
+			id: generateUUID(),
+		},
+	);
+
+	if (resp.data.result.value === null) return null;
+	const value = resp.data.result.value.data[0];
+	return decodeTaps(value);
+}
+
+async function getTaps(txns: EclipseTxn[]) {
+	const hashs: string[] = [];
+	for (const txn of txns) {
+		if (
+			txn.programIds.includes('turboe9kMc3mSR8BosPkVzoHUfn5RVNzZhkrT2hdGxN') &&
+			parseInt(txn.sol_value) === 11492 * 2 + txn.fee
+		) {
+			hashs.push(txn.txHash);
+		}
+	}
+
+	const addresses: string[] = [];
+	for (const hash of hashs) {
+		const resp = await axios.get<EclipseResponse<EclipseTxnDetail>>(
+			'/api/checker/eclipse/transaction/detail',
+			{
+				params: { tx: hash },
+			},
+		);
+		if (!resp.data.success || resp.data.errors) continue;
+
+		for (const instr of resp.data.data!.parsed_instructions) {
+			for (const transfer of instr.transfers) {
+				addresses.push(transfer.destination);
+			}
+		}
+	}
+
+	for (const address of addresses) {
+		const taps = await fetchAddressTaps(address);
+		if (taps !== null) return taps;
+	}
+	return 0;
 }
 
 function processTxns(
@@ -118,7 +184,7 @@ async function fetchWallet(
 	concurrentFetches: number,
 	ethPrice: number,
 ) {
-	let balance, domain, txns, data;
+	let balance, domain, taps, txns, data;
 	try {
 		balance = (await getEthBalance(address)) * ethPrice;
 	} catch (err) {
@@ -138,10 +204,15 @@ async function fetchWallet(
 		console.error(err);
 	}
 	try {
+		if (txns) taps = await getTaps(txns);
+	} catch (err) {
+		taps = null;
+		console.error(err);
+	}
+	try {
 		if (txns) data = processTxns(txns, ethPrice);
 	} catch (err) {
 		data = {
-			txns: null,
 			volume: null,
 			fee: null,
 			days: null,
@@ -150,7 +221,7 @@ async function fetchWallet(
 		};
 		console.error(err);
 	}
-	return { balance, domain, ...data };
+	return { balance, domain, taps, ...data };
 }
 
 export async function fetchWallets(
@@ -171,6 +242,7 @@ export async function fetchWallets(
 				updateWallet(address, {
 					txns: null,
 					domain: null,
+					taps: null,
 					balance: null,
 					volume: null,
 					fee: null,

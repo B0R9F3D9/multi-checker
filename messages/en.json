@@ -52,7 +52,8 @@
 		"srcChains": "Source chains",
 		"dstChains": "Destination chains",
 		"chains": "Chains",
-		"tokens": "Tokens"
+		"tokens": "Tokens",
+		"taps": "Taps"
 	},
 	"Projects": {
 		"LayerZero": {

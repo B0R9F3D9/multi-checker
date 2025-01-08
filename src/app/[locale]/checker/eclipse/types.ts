@@ -4,6 +4,7 @@ export type EclipseWallet = {
 	id: number;
 	address: string;
 	txns?: number | null;
+	taps?: number | null;
 	domain?: string | null;
 	balance?: number | null;
 	volume?: number | null;
@@ -13,6 +14,23 @@ export type EclipseWallet = {
 	months?: DateFrame | null;
 };
 
+export type EclipseTapsResponse = {
+	jsonrpc: string;
+	result: {
+		context: {
+			apiVersion: string;
+			slot: number;
+		};
+		value: {
+			data: string[];
+			executable: boolean;
+			lamports: number;
+			owner: string;
+		} | null;
+	};
+	id: string;
+};
+
 export type EclipseTxn = {
 	blockTime: number;
 	txHash: string;
@@ -20,6 +38,23 @@ export type EclipseTxn = {
 	status: string;
 	signer: string[];
 	sol_value: string;
+	programIds: string[];
+};
+
+type EclipseInstruction = {
+	accounts: string[];
+	program_id: string;
+	transfers: {
+		amount: number;
+		destination: string;
+		event: string;
+		source_owner: string;
+	}[];
+};
+
+export type EclipseTxnDetail = {
+	parsed_instructions: EclipseInstruction[];
+	program_id: string;
 };
 
 export type EclipseAccount = {

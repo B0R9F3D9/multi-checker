@@ -36,4 +36,12 @@ export const PROJECTS = [
 		discord: 'https://discord.com/invite/wormholecrypto',
 		isDisabled: true,
 	},
+	{
+		name: 'Hyperlane',
+		image: '/hyperlane.webp',
+		path: '/checker/hyperlane',
+		twitter: 'https://x.com/hyperlane',
+		discord: 'https://discord.gg/invite/VK9ZUy3aTV',
+		isDisabled: true,
+	},
 ];

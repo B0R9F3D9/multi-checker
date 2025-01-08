@@ -86,20 +86,24 @@ export function getColumns(
 				);
 			},
 			cell: ({ row }) =>
-				getCellComponent('domain', row.getValue, (domain: string) =>
-					showAddresses
-						? domain
-						: domain &&
-							domain.split('.turbo')[0].slice(0, 2) +
-								'...' +
-								domain.split('.turbo')[0].slice(-2) +
-								'.turbo',
-				),
+				getCellComponent('domain', row.getValue, (domain: string) => {
+					if (!domain) return '-';
+					if (showAddresses) return domain;
+					const name = domain.replace('.turbo', '');
+					return name.length > 4
+						? `${name.slice(0, 2)}...${name.slice(-2)}.turbo`
+						: `${name.slice(0, 1)}...${name.slice(-1)}.turbo`;
+				}),
 		},
 		{
 			accessorKey: 'txns',
 			header: ({ column }) => getHeaderComponent('txns', column, t),
 			cell: ({ row }) => getCellComponent('txns', row.getValue),
+		},
+		{
+			accessorKey: 'taps',
+			header: ({ column }) => getHeaderComponent('taps', column, t),
+			cell: ({ row }) => getCellComponent('taps', row.getValue),
 		},
 		{
 			accessorKey: 'balance',
