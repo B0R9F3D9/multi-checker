@@ -3,7 +3,7 @@
 import { DialogDescription, DialogTitle } from '@radix-ui/react-dialog';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { PiWarningCircle } from 'react-icons/pi';
 
 import { DataTable } from '@/components/data-table/DataTable';
@@ -24,7 +24,7 @@ import { useCheckerStore } from '@/stores/checkerStore';
 import { fetchWallets } from './api';
 import { getColumns } from './columns';
 
-const project = getProject('layerzero');
+const project = getProject('mayan');
 
 export default function CheckerPage() {
 	const t = useTranslations('CheckerPage');

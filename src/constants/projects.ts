@@ -13,6 +13,7 @@ export const PROJECTS = [
 		path: '/checker/eclipse',
 		twitter: 'https://x.com/eclipsefnd',
 		discord: 'https://discord.com/invite/eclipse-fnd',
+		hasDescription: true,
 	},
 	{
 		name: 'Odos',
@@ -29,12 +30,11 @@ export const PROJECTS = [
 		discord: 'https://discord.com/invite/bebop',
 	},
 	{
-		name: 'Wormhole',
-		image: '/wormhole.webp',
-		path: '/checker/wormhole',
-		twitter: 'https://x.com/wormhole',
-		discord: 'https://discord.com/invite/wormholecrypto',
-		isDisabled: true,
+		name: 'Mayan',
+		image: '/mayan.webp',
+		path: '/checker/mayan',
+		twitter: 'https://x.com/MayanFinance',
+		discord: 'https://discord.com/invite/mayanfinance',
 	},
 	{
 		name: 'Hyperlane',
@@ -42,6 +42,14 @@ export const PROJECTS = [
 		path: '/checker/hyperlane',
 		twitter: 'https://x.com/hyperlane',
 		discord: 'https://discord.gg/invite/VK9ZUy3aTV',
+		isDisabled: true,
+	},
+	{
+		name: 'Jumper',
+		image: '/jumper.webp',
+		path: '/checker/jumper',
+		twitter: 'https://x.com/JumperExchange',
+		discord: 'https://discord.com/invite/jumperexchange',
 		isDisabled: true,
 	},
 ];

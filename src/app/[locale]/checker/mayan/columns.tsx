@@ -3,17 +3,19 @@ import * as React from 'react';
 import { LuCopy, LuEyeOff, LuRotateCcw, LuTrash } from 'react-icons/lu';
 
 import {
+	getActionButton,
 	getCellComponent,
-	getChainsComponent,
 	getDatesComponent,
 	getDebankButton,
 	getHeaderComponent,
 } from '@/components/data-table/utils';
 import { Button } from '@/components/ui/button';
+import { ACTION_LINKS } from '@/constants';
 import type { Toast } from '@/hooks/use-toast';
 import type { DateFrame } from '@/types/wallet';
 
-import type { OdosWallet } from './types';
+import { getChainsComponent } from './chains';
+import type { MayanWallet } from './types';
 
 export function getColumns(
 	toast: (options: Toast) => {
@@ -25,7 +27,7 @@ export function getColumns(
 	recheckWallet: (address: string) => Promise<void>,
 	deleteWallet: (address: string) => void,
 	t: (t: string) => string,
-): ColumnDef<OdosWallet>[] {
+): ColumnDef<MayanWallet>[] {
 	return [
 		{
 			accessorKey: 'id',
@@ -74,33 +76,23 @@ export function getColumns(
 			header: ({ column }) => getHeaderComponent('txns', column, t),
 			cell: ({ row }) => getCellComponent('txns', row.getValue),
 		},
-		{
-			accessorKey: 'volume',
-			header: ({ column }) => getHeaderComponent('volume', column, t),
+		...['srcChains', 'dstChains'].map<ColumnDef<MayanWallet>>(chainsType => ({
+			accessorKey: chainsType,
+			header: ({ column }) => getHeaderComponent(chainsType, column, t),
 			cell: ({ row }) =>
-				getCellComponent('volume', row.getValue, (value: number) =>
-					new Intl.NumberFormat('en-US', {
-						style: 'currency',
-						currency: 'USD',
-					}).format(value),
+				getCellComponent(
+					chainsType,
+					row.getValue,
+					(chains: MayanWallet['srcChains']) => getChainsComponent(chains),
 				),
-		},
-		{
-			accessorKey: 'chains',
-			header: ({ column }) => getHeaderComponent('chains', column, t),
-			cell: ({ row }) =>
-				getCellComponent('chains', row.getValue, getChainsComponent),
-		},
-		...['days', 'weeks', 'months'].map<ColumnDef<OdosWallet>>(
+		})),
+		...['days', 'weeks', 'months'].map<ColumnDef<MayanWallet>>(
 			(dateFrame: string) => ({
 				accessorKey: dateFrame,
 				header: ({ column }) => getHeaderComponent(dateFrame, column, t),
 				cell: ({ row }) =>
 					getCellComponent(dateFrame, row.getValue, (data: DateFrame) =>
-						getDatesComponent(
-							data,
-							dateFrame as 'weeks' | 'days' | 'months',
-						),
+						getDatesComponent(data, dateFrame as 'weeks' | 'days' | 'months'),
 					),
 			}),
 		),
@@ -109,6 +101,11 @@ export function getColumns(
 			header: () => <div className="text-center">{t('actions')}</div>,
 			cell: ({ row }) => (
 				<div className="flex justify-center items-center gap-1">
+					{getActionButton(
+						row.getValue('address'),
+						ACTION_LINKS.mayanscan,
+						'/Mayan.webp',
+					)}
 					{getDebankButton(row.getValue('address'))}
 					<Button
 						className="cursor-pointer w-7 h-7"

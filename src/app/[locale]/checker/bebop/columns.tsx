@@ -98,7 +98,6 @@ export function getColumns(
 				cell: ({ row }) =>
 					getCellComponent(dateFrame, row.getValue, (data: DateFrame) =>
 						getDatesComponent(
-							new Date('2022-06-09'),
 							data,
 							dateFrame as 'weeks' | 'days' | 'months',
 						),

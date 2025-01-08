@@ -6,4 +6,5 @@ export const ACTION_LINKS = {
 	solscan: 'https://solscan.io/account/',
 	layerzeroscan: 'https://layerzeroscan.com/address/',
 	eclipsescan: 'https://eclipsescan.xyz/account/',
+	mayanscan: 'https://explorer.mayan.finance/trader/',
 };

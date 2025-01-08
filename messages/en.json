@@ -53,11 +53,14 @@
 		"dstChains": "Destination chains",
 		"chains": "Chains",
 		"tokens": "Tokens",
-		"taps": "Taps"
-	},
-	"Projects": {
-		"LayerZero": {
-			"description": "WARNING: Due to the peculiarities of API LayerZeroScan in the table shows data only on the last 100 transactions of the wallet (the number of transactions is shown correctly). And also transactions are counted from 01-05-2024, the snapshot date."
+		"taps": "Taps",
+		"Projects": {
+			"LayerZero": {
+				"description": "WARNING: Due to the peculiarities of API LayerZeroScan in the table shows data only on the last 100 transactions of the wallet (the number of transactions is shown correctly). And also transactions are counted from 01-05-2024, the snapshot date."
+			},
+			"Eclipse": {
+				"description": "ATTENTION: Due to the peculiarities of the Eclipsescan API, the table displays data only on transactions made after January 1, 2025, because of this the number of tap counts may not be displayed if the creation was last year."
+			}
 		}
 	}
 }

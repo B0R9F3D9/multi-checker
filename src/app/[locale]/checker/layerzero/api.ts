@@ -1,7 +1,6 @@
 import axios from 'axios';
-import { format } from 'date-fns';
 
-import { promiseAll } from '@/lib/utils';
+import { getWeekStart, promiseAll } from '@/lib/utils';
 import type { Wallet } from '@/types/wallet';
 
 import type { LayerzeroResponse, LayerzeroTxn, LayerzeroWallet } from './types';
@@ -58,24 +57,19 @@ function parseResult(txns: LayerzeroTxn[]): Partial<LayerzeroWallet> {
 		if (dstChain) dstChain.txns += 1;
 		else result.dstChains.push({ name: txn.dstChainKey, txns: 1 });
 
-		const date = new Date(txn.created * 1000);
-		const day = result.days.find(
-			day => day.date === format(date, 'yyyy-MM-dd'),
-		);
+		const date = new Date(txn.created * 1000).toISOString().split('T')[0];
+		const day = result.days.find(day => day.date === date);
 		if (day) day.txns += 1;
-		else result.days.push({ date: format(date, 'yyyy-MM-dd'), txns: 1 });
+		else result.days.push({ date, txns: 1 });
 
-		const week = result.weeks.find(
-			week => week.date === format(date, 'yyyy-ww'),
-		);
+		const weekDate = getWeekStart(date);
+		const week = result.weeks.find(week => week.date === weekDate);
 		if (week) week.txns += 1;
-		else result.weeks.push({ date: format(date, 'yyyy-ww'), txns: 1 });
+		else result.weeks.push({ date: weekDate, txns: 1 });
 
-		const month = result.months.find(
-			month => month.date === format(date, 'yyyy-MM'),
-		);
+		const month = result.months.find(month => month.date === date.slice(0, 7));
 		if (month) month.txns += 1;
-		else result.months.push({ date: format(date, 'yyyy-MM'), txns: 1 });
+		else result.months.push({ date: date.slice(0, 7), txns: 1 });
 
 		contractsSet.add(txn.srcUaAddress);
 	}
@@ -91,9 +85,18 @@ function parseResult(txns: LayerzeroTxn[]): Partial<LayerzeroWallet> {
 	result.protocols = result.protocols
 		.filter(item => item.id !== '')
 		.sort((a, b) => b.txns - a.txns);
-	result.days = result.days.filter(item => item.date !== '');
-	result.weeks = result.weeks.filter(item => item.date !== '');
-	result.months = result.months.filter(item => item.date !== '');
+	result.days = result.days
+		.filter(item => item.date !== '')
+		.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+	result.weeks = result.weeks
+		.filter(item => item.date !== '')
+		.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+	result.months = result.months
+		.filter(item => item.date !== '')
+		.sort(
+			(a, b) =>
+				new Date(a.date + '-01').getTime() - new Date(b.date + '-01').getTime(),
+		);
 
 	return result;
 }

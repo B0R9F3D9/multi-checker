@@ -1,7 +1,6 @@
 import axios from 'axios';
-import { format } from 'date-fns';
 
-import { getEthPrice, promiseAll } from '@/lib/utils';
+import { getEthPrice, getWeekStart, promiseAll } from '@/lib/utils';
 import { generateUUID } from '@/lib/utils';
 import type { Wallet } from '@/types/wallet';
 
@@ -51,6 +50,7 @@ async function getDomain(address: string): Promise<string> {
 async function getTxns(
 	address: string,
 	before?: string,
+	collectedTxns: EclipseTxn[] = [],
 ): Promise<EclipseTxn[]> {
 	const resp = await axios.get<EclipseResponse<{ transactions: EclipseTxn[] }>>(
 		// 'https://api.eclipsescan.xyz/v1/account/transaction',
@@ -67,9 +67,12 @@ async function getTxns(
 		throw new Error(resp.data.errors!.message);
 
 	const txns = resp.data.data!.transactions;
+	collectedTxns.push(...txns);
+
 	if (txns.length === 40)
-		return await getTxns(address, txns[txns.length - 1].txHash);
-	return txns;
+		return await getTxns(address, txns[txns.length - 1].txHash, collectedTxns);
+
+	return collectedTxns;
 }
 
 async function fetchAddressTaps(address: string) {
@@ -152,29 +155,33 @@ function processTxns(
 		result.volume += (parseInt(txn.sol_value) / 10 ** 9) * ethPrice;
 		result.fee += (txn.fee / 10 ** 9) * ethPrice;
 
-		const date = new Date(txn.blockTime * 1000);
-		const day = result.days.find(
-			day => day.date === format(date, 'yyyy-MM-dd'),
-		);
+		const date = new Date(txn.blockTime * 1000).toISOString().split('T')[0];
+		const day = result.days.find(day => day.date === date);
 		if (day) day.txns += 1;
-		else result.days.push({ date: format(date, 'yyyy-MM-dd'), txns: 1 });
+		else result.days.push({ date, txns: 1 });
 
-		const week = result.weeks.find(
-			week => week.date === format(date, 'yyyy-ww'),
-		);
+		const weekDate = getWeekStart(date);
+		const week = result.weeks.find(week => week.date === weekDate);
 		if (week) week.txns += 1;
-		else result.weeks.push({ date: format(date, 'yyyy-ww'), txns: 1 });
+		else result.weeks.push({ date: weekDate, txns: 1 });
 
-		const month = result.months.find(
-			month => month.date === format(date, 'yyyy-MM'),
-		);
+		const month = result.months.find(month => month.date === date.slice(0, 7));
 		if (month) month.txns += 1;
-		else result.months.push({ date: format(date, 'yyyy-MM'), txns: 1 });
+		else result.months.push({ date: date.slice(0, 7), txns: 1 });
 	}
 
-	result.days = result.days.filter(item => item.date !== '');
-	result.weeks = result.weeks.filter(item => item.date !== '');
-	result.months = result.months.filter(item => item.date !== '');
+	result.days = result.days
+		.filter(item => item.date !== '')
+		.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+	result.weeks = result.weeks
+		.filter(item => item.date !== '')
+		.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+	result.months = result.months
+		.filter(item => item.date !== '')
+		.sort(
+			(a, b) =>
+				new Date(a.date + '-01').getTime() - new Date(b.date + '-01').getTime(),
+		);
 
 	return result;
 }

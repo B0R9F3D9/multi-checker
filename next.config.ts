@@ -16,6 +16,20 @@ const nextConfig: NextConfig = {
 				pathname: '/icons/chains/**',
 				search: '',
 			},
+			{
+				protocol: 'https',
+				hostname: 'cdn.mayan.finance',
+				port: '',
+				pathname: '/**',
+				search: '',
+			},
+			{
+				protocol: 'https',
+				hostname: 'explorer.mayan.finance',
+				port: '',
+				pathname: '/assets/**',
+				search: '',
+			},
 		],
 	},
 };

@@ -1,7 +1,6 @@
 import axios from 'axios';
-import { format } from 'date-fns';
 
-import { promiseAll } from '@/lib/utils';
+import { getWeekStart, promiseAll } from '@/lib/utils';
 import type { Wallet } from '@/types/wallet';
 
 import type { BebopTxn, BebopTxnResponse, BebopWallet } from './types';
@@ -35,34 +34,37 @@ function processTxns(txns: BebopTxn[]): Partial<BebopWallet> {
 	for (const txn of txns) {
 		result.volume += txn.volumeUsd;
 
-		const txnDate = new Date(txn.timestamp);
-
-		const day = result.days.find(
-			day => day.date === format(txnDate, 'yyyy-MM-dd'),
-		);
+		const date = new Date(txn.timestamp).toISOString().split('T')[0];
+		const day = result.days.find(day => day.date === date);
 		if (day) day.txns += 1;
-		else result.days.push({ date: format(txnDate, 'yyyy-MM-dd'), txns: 1 });
+		else result.days.push({ date, txns: 1 });
 
-		const week = result.weeks.find(
-			week => week.date === format(txnDate, 'yyyy-ww'),
-		);
+		const weekDate = getWeekStart(date);
+		const week = result.weeks.find(week => week.date === weekDate);
 		if (week) week.txns += 1;
-		else result.weeks.push({ date: format(txnDate, 'yyyy-ww'), txns: 1 });
+		else result.weeks.push({ date: weekDate, txns: 1 });
 
-		const month = result.months.find(
-			month => month.date === format(txnDate, 'yyyy-MM'),
-		);
+		const month = result.months.find(month => month.date === date.slice(0, 7));
 		if (month) month.txns += 1;
-		else result.months.push({ date: format(txnDate, 'yyyy-MM'), txns: 1 });
+		else result.months.push({ date: date.slice(0, 7), txns: 1 });
 
 		const chain = result.chains.find(chain => chain.id === txn.chain_id);
 		if (chain) chain.txns += 1;
 		else result.chains.push({ id: txn.chain_id, txns: 1 });
 	}
 
-	result.days = result.days.filter(item => item.date !== '');
-	result.weeks = result.weeks.filter(item => item.date !== '');
-	result.months = result.months.filter(item => item.date !== '');
+	result.days = result.days
+		.filter(item => item.date !== '')
+		.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+	result.weeks = result.weeks
+		.filter(item => item.date !== '')
+		.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+	result.months = result.months
+		.filter(item => item.date !== '')
+		.sort(
+			(a, b) =>
+				new Date(a.date + '-01').getTime() - new Date(b.date + '-01').getTime(),
+		);
 	result.chains = result.chains
 		.filter(item => item.id !== 0)
 		.sort((a, b) => b.txns - a.txns);

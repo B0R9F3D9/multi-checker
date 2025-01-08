@@ -145,7 +145,6 @@ export function getColumns(
 				cell: ({ row }) =>
 					getCellComponent(dateFrame, row.getValue, (data: DateFrame) =>
 						getDatesComponent(
-							new Date('2024-10-01'),
 							data,
 							dateFrame as 'weeks' | 'days' | 'months',
 						),

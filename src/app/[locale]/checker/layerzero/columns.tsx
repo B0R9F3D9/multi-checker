@@ -107,11 +107,7 @@ export function getColumns(
 				header: ({ column }) => getHeaderComponent(dateFrame, column, t),
 				cell: ({ row }) =>
 					getCellComponent(dateFrame, row.getValue, (data: DateFrame) =>
-						getDatesComponent(
-							new Date('2024-05-01'),
-							data,
-							dateFrame as 'weeks' | 'days' | 'months',
-						),
+						getDatesComponent(data, dateFrame as 'weeks' | 'days' | 'months'),
 					),
 			}),
 		),

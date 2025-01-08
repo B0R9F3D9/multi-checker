@@ -75,3 +75,9 @@ export function generateUUID(): string {
 		return v.toString(16);
 	});
 }
+
+export function getWeekStart(date: string) {
+	const d = new Date(date);
+	d.setUTCDate(d.getUTCDate() - d.getUTCDay() + 1);
+	return d.toISOString().split('T')[0];
+}

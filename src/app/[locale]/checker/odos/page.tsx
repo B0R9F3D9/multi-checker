@@ -1,12 +1,20 @@
 'use client';
 
+import { DialogDescription, DialogTitle } from '@radix-ui/react-dialog';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { PiWarningCircle } from 'react-icons/pi';
 
 import { DataTable } from '@/components/data-table/DataTable';
 import { SettingsDialog } from '@/components/data-table/SettingsDialog';
 import { Button } from '@/components/ui/button';
+import {
+	Dialog,
+	DialogContent,
+	DialogHeader,
+	DialogTrigger,
+} from '@/components/ui/dialog';
 import { Progress } from '@/components/ui/progress';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
@@ -63,7 +71,26 @@ export default function CheckerPage() {
 				width={100}
 				height={100}
 			/>
-			<h1 className="text-2xl font-bold">{project!.name}</h1>
+			<div className="flex flex-row gap-2 justify-center items-center">
+				<h1 className="text-2xl font-bold">{project!.name}</h1>
+				{project!.hasDescription ? (
+					<Dialog>
+						<DialogTrigger>
+							<PiWarningCircle size={24} />
+						</DialogTrigger>
+						<DialogContent>
+							<DialogHeader>
+								<DialogTitle className="text-2xl text-center font-semibold">
+									{project!.name}
+								</DialogTitle>
+							</DialogHeader>
+							<DialogDescription>
+								{t(`Projects.${project!.name}.description`)}
+							</DialogDescription>
+						</DialogContent>
+					</Dialog>
+				) : null}
+			</div>
 			<Textarea
 				rows={5}
 				value={showAddresses ? addresses : t('addressesPlaceholderDisabled')}

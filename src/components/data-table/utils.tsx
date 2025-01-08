@@ -18,7 +18,7 @@ import { Skeleton } from '../ui/skeleton';
 export function getActionButton(address: string, link: string, image: string) {
 	return (
 		<Button
-			className="cursor-pointer w-7 h-7"
+			className="cursor-pointer w-6 h-6"
 			variant="ghost"
 			size="icon"
 			asChild
@@ -29,7 +29,7 @@ export function getActionButton(address: string, link: string, image: string) {
 					alt=""
 					width={28}
 					height={28}
-					className="rounded-md"
+					className="rounded-md w-full h-full"
 				/>
 			</a>
 		</Button>
@@ -82,12 +82,15 @@ export function getHeaderComponent(
 }
 
 export function getDatesComponent(
-	startDate: Date,
 	dates: DateFrame,
 	format: 'days' | 'weeks' | 'months',
+	startDate?: Date,
 ) {
 	if (dates.length === 0) {
 		return <p className="flex justify-center items-center">0</p>;
+	}
+	if (!startDate) {
+		startDate = new Date(dates[0].date);
 	}
 
 	const periods: {
@@ -98,34 +101,23 @@ export function getDatesComponent(
 	const today = new Date();
 
 	while (startDate <= today) {
-		let formattedDate;
 		if (format === 'days') {
-			formattedDate = startDate.toISOString().split('T')[0];
 			periods.push({
-				period: formattedDate,
+				period: startDate.toISOString().split('T')[0],
 				month: startDate.getMonth(),
 				year: startDate.getFullYear(),
 			});
 			startDate.setDate(startDate.getDate() + 1);
 		} else if (format === 'weeks') {
-			const year = startDate.getFullYear();
-			const week = Math.ceil(
-				((startDate.getTime() - new Date(year, 0, 1).getTime()) / 86400000 +
-					new Date(year, 0, 1).getDay() +
-					1) /
-					7,
-			);
-			formattedDate = `${year}-${week}`;
 			periods.push({
-				period: formattedDate,
+				period: startDate.toISOString().split('T')[0],
 				month: startDate.getMonth(),
 				year: startDate.getFullYear(),
 			});
 			startDate.setDate(startDate.getDate() + 7);
 		} else if (format === 'months') {
-			formattedDate = `${startDate.getFullYear()}-${String(startDate.getMonth() + 1).padStart(2, '0')}`;
 			periods.push({
-				period: formattedDate,
+				period: startDate.toISOString().slice(0, 7),
 				month: startDate.getMonth(),
 				year: startDate.getFullYear(),
 			});
@@ -136,9 +128,7 @@ export function getDatesComponent(
 	const months = periods.reduce(
 		(acc: { [key: string]: string[] }, { period, year, month }) => {
 			const key = `${year}-${String(month + 1).padStart(2, '0')}`;
-			if (!acc[key]) {
-				acc[key] = [];
-			}
+			if (!acc[key]) acc[key] = [];
 			acc[key].push(period);
 			return acc;
 		},
@@ -167,11 +157,9 @@ export function getDatesComponent(
 									{monthLabel}
 								</h3>
 								<div
-									className="grid gap-2 w-fit max-w-full"
+									className="grid gap-2 w-fit max-w-full justify-center items-center"
 									style={{
 										gridTemplateColumns: `repeat(${Math.min(7, periods.length)}, minmax(1rem, 1fr))`,
-										justifyContent: 'center',
-										alignItems: 'center',
 										flexShrink: 0,
 									}}
 								>
