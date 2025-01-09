@@ -30,6 +30,13 @@ const nextConfig: NextConfig = {
 				pathname: '/assets/**',
 				search: '',
 			},
+			{
+				protocol: 'https',
+				hostname: 'raw.githubusercontent.com',
+				port: '',
+				pathname: '/hyperlane-xyz/hyperlane-registry/main/chains/**',
+				search: '',
+			},
 		],
 	},
 };

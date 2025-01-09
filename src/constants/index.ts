@@ -7,4 +7,5 @@ export const ACTION_LINKS = {
 	layerzeroscan: 'https://layerzeroscan.com/address/',
 	eclipsescan: 'https://eclipsescan.xyz/account/',
 	mayanscan: 'https://explorer.mayan.finance/trader/',
+	hyperlanescan: 'https://explorer.hyperlane.xyz/?search=',
 };

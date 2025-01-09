@@ -91,4 +91,39 @@ export const CHAINS = [
 		id: 167000,
 		image: 'https://icons.llamao.fi/icons/chains/rsz_taiko.jpg',
 	},
+	{
+		name: 'Manta',
+		id: 169,
+		image: 'https://icons.llamao.fi/icons/chains/rsz_manta.jpg',
+	},
+	{
+		name: 'Celo',
+		id: 42220,
+		image: 'https://icons.llamao.fi/icons/chains/rsz_celo.jpg',
+	},
+	{
+		name: 'Gnosis',
+		id: 100,
+		image: 'https://icons.llamao.fi/icons/chains/rsz_gnosis.jpg',
+	},
+	{
+		name: 'Moonbeam',
+		id: 1284,
+		image: 'https://icons.llamao.fi/icons/chains/rsz_moonbeam.jpg',
+	},
+	{
+		name: 'Eclipse',
+		id: 1408864445,
+		image: 'https://raw.githubusercontent.com/hyperlane-xyz/hyperlane-registry/main/chains/eclipsemainnet/logo.svg',
+	},
+	{
+		name: 'Solana',
+		id: 1399811149,
+		image: 'https://raw.githubusercontent.com/hyperlane-xyz/hyperlane-registry/main/chains/solanamainnet/logo.svg',
+	},
+	{
+		name: 'Neutron',
+		id: 1853125230,
+		image: 'https://raw.githubusercontent.com/hyperlane-xyz/hyperlane-registry/main/chains/neutron/logo.svg',
+	},
 ];

@@ -15,13 +15,11 @@ export default function Header() {
 				<LocaleSwitcher />
 			</div>
 
-			<div className="absolute left-1/2 transform -translate-x-1/2 flex items-center">
-				<Button asChild variant="link">
-					<Link href="/" className="flex items-center gap-2">
-						<BiAtom />
-						<h1 className="text-xl font-semibold">Multi Checker</h1>
-					</Link>
-				</Button>
+			<div className="absolute left-1/2 transform -translate-x-1/2 flex items-center hover:text-sky-400">
+				<Link href="/" className="flex items-center gap-2 justify-center">
+					<BiAtom />
+					<h1 className="text-2xl font-semibold">Multi Checker</h1>
+				</Link>
 			</div>
 
 			<div className="flex-shrink-0">

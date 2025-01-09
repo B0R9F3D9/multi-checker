@@ -1,3 +1,4 @@
+import { PublicKey } from '@solana/web3.js';
 import axios from 'axios';
 import { type ClassValue, clsx } from 'clsx';
 
@@ -80,4 +81,9 @@ export function getWeekStart(date: string) {
 	const d = new Date(date);
 	d.setUTCDate(d.getUTCDate() - d.getUTCDay() + 1);
 	return d.toISOString().split('T')[0];
+}
+
+export function solanaAddressToBytea(address: string): string {
+	const bytes = new PublicKey(address).toBytes();
+	return '\\x' + Buffer.from(bytes).toString('hex');
 }

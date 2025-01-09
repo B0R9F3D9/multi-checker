@@ -42,7 +42,6 @@ export const PROJECTS = [
 		path: '/checker/hyperlane',
 		twitter: 'https://x.com/hyperlane',
 		discord: 'https://discord.gg/invite/VK9ZUy3aTV',
-		isDisabled: true,
 	},
 	{
 		name: 'Jumper',
