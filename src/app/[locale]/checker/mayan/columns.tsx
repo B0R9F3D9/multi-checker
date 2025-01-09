@@ -76,6 +76,11 @@ export function getColumns(
 			header: ({ column }) => getHeaderComponent('txns', column, t),
 			cell: ({ row }) => getCellComponent('txns', row.getValue),
 		},
+		{
+			accessorKey: 'volume',
+			header: ({ column }) => getHeaderComponent('volume', column, t),
+			cell: ({ row }) => getCellComponent('volume', row.getValue),
+		},
 		...['srcChains', 'dstChains'].map<ColumnDef<MayanWallet>>(chainsType => ({
 			accessorKey: chainsType,
 			header: ({ column }) => getHeaderComponent(chainsType, column, t),
