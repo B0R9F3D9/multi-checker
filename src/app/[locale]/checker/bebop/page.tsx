@@ -3,7 +3,7 @@
 import { DialogDescription, DialogTitle } from '@radix-ui/react-dialog';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { PiWarningCircle } from 'react-icons/pi';
 
 import { DataTable } from '@/components/data-table/DataTable';

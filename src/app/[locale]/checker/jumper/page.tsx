@@ -24,7 +24,7 @@ import { useCheckerStore } from '@/stores/checkerStore';
 import { fetchWallets } from './api';
 import { getColumns } from './columns';
 
-const project = getProject('layerzero');
+const project = getProject('jumper');
 
 export default function CheckerPage() {
 	const t = useTranslations('CheckerPage');

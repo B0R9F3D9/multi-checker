@@ -24,6 +24,12 @@
 			"@/ui/*": ["./src/components/ui/*"]
 		}
 	},
-	"include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+	"include": [
+		"next-env.d.ts",
+		"**/*.ts",
+		"**/*.tsx",
+		".next/types/**/*.ts",
+		"src/app/[locale]/about/mdx-page.tmdx"
+	],
 	"exclude": ["node_modules"]
 }

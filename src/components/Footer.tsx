@@ -14,9 +14,9 @@ export default function Footer() {
 					<FaGithub />
 				</a>
 			</Button>
-			<Button variant="link">
-				<Link href="/about">{t('link')}</Link>
-			</Button>
+			<Link className="hover:text-sky-300" href="/about">
+				{t('link')}
+			</Link>
 			<Button variant="outline" size="icon">
 				<a href="https://x.com/b0r9f3d9" target="_blank">
 					<FaXTwitter />

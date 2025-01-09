@@ -1,5 +1,4 @@
 // 'use client';
-
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { FaDiscord } from 'react-icons/fa';

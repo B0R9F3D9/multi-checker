@@ -114,16 +114,19 @@ export const CHAINS = [
 	{
 		name: 'Eclipse',
 		id: 1408864445,
-		image: 'https://raw.githubusercontent.com/hyperlane-xyz/hyperlane-registry/main/chains/eclipsemainnet/logo.svg',
+		image:
+			'https://raw.githubusercontent.com/hyperlane-xyz/hyperlane-registry/main/chains/eclipsemainnet/logo.svg',
 	},
 	{
 		name: 'Solana',
 		id: 1399811149,
-		image: 'https://raw.githubusercontent.com/hyperlane-xyz/hyperlane-registry/main/chains/solanamainnet/logo.svg',
+		image:
+			'https://raw.githubusercontent.com/hyperlane-xyz/hyperlane-registry/main/chains/solanamainnet/logo.svg',
 	},
 	{
 		name: 'Neutron',
 		id: 1853125230,
-		image: 'https://raw.githubusercontent.com/hyperlane-xyz/hyperlane-registry/main/chains/neutron/logo.svg',
+		image:
+			'https://raw.githubusercontent.com/hyperlane-xyz/hyperlane-registry/main/chains/neutron/logo.svg',
 	},
 ];

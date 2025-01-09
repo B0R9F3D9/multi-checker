@@ -104,7 +104,7 @@ export function getColumns(
 					{getActionButton(
 						row.getValue('address'),
 						ACTION_LINKS.mayanscan,
-						'/Mayan.webp',
+						'/mayan.webp',
 					)}
 					{getDebankButton(row.getValue('address'))}
 					<Button

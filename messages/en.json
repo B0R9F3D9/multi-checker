@@ -62,5 +62,9 @@
 				"description": "ATTENTION: Due to the peculiarities of the Eclipsescan API, the table displays data only on transactions made after January 1, 2025, because of this the number of tap counts may not be displayed if the creation was last year."
 			}
 		}
+	},
+	"AboutPage": {
+		"title": "About",
+		"description": "The site is entirely developed by <button>b0r9f3d9</button> for the purpose of checking the statistics of his wallets in the projects."
 	}
 }
