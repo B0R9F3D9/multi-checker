@@ -7,7 +7,7 @@ export type JumperWallet = {
 	volume?: number | null;
 	srcChains?: { id: number; txns: number }[] | null;
 	dstChains?: { id: number; txns: number }[] | null;
-	protocols?: { name: string; txns: number }[] | null;
+	protocols?: { name: string; txns: number; id: string }[] | null;
 	days?: DateFrame | null;
 	weeks?: DateFrame | null;
 	months?: DateFrame | null;

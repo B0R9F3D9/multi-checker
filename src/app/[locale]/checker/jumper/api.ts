@@ -27,7 +27,7 @@ function processTxns(txns: JumperTxn[]): Partial<JumperWallet> {
 		volume: 0,
 		srcChains: [{ id: 0, txns: 0 }],
 		dstChains: [{ id: 0, txns: 0 }],
-		protocols: [{ name: '', txns: 0 }],
+		protocols: [{ id: '', name: '', txns: 0 }],
 		days: [{ date: '', txns: 0 }],
 		weeks: [{ date: '', txns: 0 }],
 		months: [{ date: '', txns: 0 }],
@@ -68,7 +68,7 @@ function processTxns(txns: JumperTxn[]): Partial<JumperWallet> {
 			protocol => protocol.name === txn.tool,
 		);
 		if (protocol) protocol.txns += 1;
-		else result.protocols.push({ name: txn.tool, txns: 1 });
+		else result.protocols.push({ name: txn.tool, txns: 1, id: '' });
 	}
 
 	result.days = result.days

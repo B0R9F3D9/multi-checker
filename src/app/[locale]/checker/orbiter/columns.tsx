@@ -102,11 +102,7 @@ export function getColumns(
 			accessorKey: chainsType,
 			header: ({ column }) => getHeaderComponent(chainsType, column, t),
 			cell: ({ row }) =>
-				getCellComponent(
-					chainsType,
-					row.getValue,
-					ChainsComponent,
-				),
+				getCellComponent(chainsType, row.getValue, ChainsComponent),
 		})),
 		...['days', 'weeks', 'months'].map<ColumnDef<OrbiterWallet>>(
 			(dateFrame: string) => ({

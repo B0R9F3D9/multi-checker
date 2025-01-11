@@ -4,13 +4,13 @@ export type LayerzeroWallet = {
 	id: number;
 	address: string;
 	txns?: number | null;
-	days?: DateFrame | null;
-	weeks?: DateFrame | null;
-	months?: DateFrame | null;
 	srcChains?: { id: number; txns: number }[] | null;
 	dstChains?: { id: number; txns: number }[] | null;
 	protocols?: { id: string; name: string; txns: number }[] | null;
 	contracts?: number | null;
+	days?: DateFrame | null;
+	weeks?: DateFrame | null;
+	months?: DateFrame | null;
 };
 
 export type LayerzeroTxn = {
