@@ -59,4 +59,12 @@ export const PROJECTS: Project[] = [
 		twitter: 'https://x.com/Orbiter_Finance',
 		discord: 'https://discord.com/invite/FbztTBvnBT',
 	},
+	{
+		name: 'Avantis',
+		image: '/avantis.webp',
+		path: '/checker/avantis',
+		twitter: 'https://x.com/avantisfi',
+		discord: 'https://discord.com/invite/qJabbFzcUn',
+		isDisabled: true
+	},
 ];
