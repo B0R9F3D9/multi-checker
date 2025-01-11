@@ -1,4 +1,6 @@
-export const PROJECTS = [
+import type { Project } from '@/types/project';
+
+export const PROJECTS: Project[] = [
 	{
 		name: 'LayerZero',
 		image: '/layerzero.webp',
@@ -49,6 +51,12 @@ export const PROJECTS = [
 		path: '/checker/jumper',
 		twitter: 'https://x.com/JumperExchange',
 		discord: 'https://discord.com/invite/jumperexchange',
-		isDisabled: true,
+	},
+	{
+		name: 'Orbiter',
+		image: '/orbiter.webp',
+		path: '/checker/orbiter',
+		twitter: 'https://x.com/Orbiter_Finance',
+		discord: 'https://discord.com/invite/FbztTBvnBT',
 	},
 ];

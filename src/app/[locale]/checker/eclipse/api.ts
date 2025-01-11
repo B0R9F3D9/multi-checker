@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { getEthPrice, getWeekStart, promiseAll } from '@/lib/utils';
+import { getTokenPrice, getWeekStart, promiseAll } from '@/lib/utils';
 import { generateUUID } from '@/lib/utils';
 import type { Wallet } from '@/types/wallet';
 
@@ -238,7 +238,7 @@ export async function fetchWallets(
 	updateWallet: (address: string, wallet: Partial<Wallet>) => void,
 	setProgress?: (progress: number) => void,
 ) {
-	const ethPrice = await getEthPrice();
+	const ethPrice = await getTokenPrice('ETH');
 	await promiseAll(
 		addresses.map(address => async () => {
 			try {

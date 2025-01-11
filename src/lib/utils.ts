@@ -58,9 +58,10 @@ export function promiseAll<T>(
 	});
 }
 
-export async function getEthPrice(): Promise<number> {
+export async function getTokenPrice(ticker: string) {
+	if (ticker.includes('USD')) return 1;
 	const resp = await axios.get('https://api.binance.com/api/v1/ticker/price', {
-		params: { symbol: 'ETHUSDT' },
+		params: { symbol: ticker + 'USDT' },
 	});
 	return parseFloat(resp.data.price!);
 }

@@ -38,6 +38,20 @@ const nextConfig: NextConfig = {
 				pathname: '/hyperlane-xyz/hyperlane-registry/main/chains/**',
 				search: '',
 			},
+			{
+				protocol: 'https',
+				hostname: 'pbs.twimg.com',
+				port: '',
+				pathname: '/profile_images/**',
+				search: '',
+			},
+			{
+				protocol: 'https',
+				hostname: 'cdn.orbiter.finance',
+				port: '',
+				pathname: '/icon/chain/**',
+				search: '',
+			},
 		],
 	},
 };

@@ -7,15 +7,15 @@ export type LayerzeroWallet = {
 	days?: DateFrame | null;
 	weeks?: DateFrame | null;
 	months?: DateFrame | null;
-	srcChains?: { name: string; txns: number }[] | null;
-	dstChains?: { name: string; txns: number }[] | null;
+	srcChains?: { id: number; txns: number }[] | null;
+	dstChains?: { id: number; txns: number }[] | null;
 	protocols?: { id: string; name: string; txns: number }[] | null;
 	contracts?: number | null;
 };
 
 export type LayerzeroTxn = {
-	dstChainKey: string;
-	srcChainKey: string;
+	dstChainId: number;
+	srcChainId: number;
 	created: number;
 	mainStatus: 'DELIVIRED' | 'INFLIGHT' | 'CONFIRMING';
 	srcUaAddress: string;

@@ -2,6 +2,7 @@ import type { ColumnDef } from '@tanstack/react-table';
 import * as React from 'react';
 import { LuCopy, LuEyeOff, LuRotateCcw, LuTrash } from 'react-icons/lu';
 
+import { ChainsComponent } from '@/components/data-table/Chains';
 import {
 	getActionButton,
 	getCellComponent,
@@ -14,7 +15,6 @@ import { ACTION_LINKS } from '@/constants';
 import type { Toast } from '@/hooks/use-toast';
 import type { DateFrame } from '@/types/wallet';
 
-import { getChainsComponent } from './chains';
 import type { MayanWallet } from './types';
 
 export function getColumns(
@@ -79,7 +79,13 @@ export function getColumns(
 		{
 			accessorKey: 'volume',
 			header: ({ column }) => getHeaderComponent('volume', column, t),
-			cell: ({ row }) => getCellComponent('volume', row.getValue),
+			cell: ({ row }) =>
+				getCellComponent('volume', row.getValue, (value: number) =>
+					new Intl.NumberFormat('en-US', {
+						style: 'currency',
+						currency: 'USD',
+					}).format(value),
+				),
 		},
 		...['srcChains', 'dstChains'].map<ColumnDef<MayanWallet>>(chainsType => ({
 			accessorKey: chainsType,
@@ -88,7 +94,7 @@ export function getColumns(
 				getCellComponent(
 					chainsType,
 					row.getValue,
-					(chains: MayanWallet['srcChains']) => getChainsComponent(chains),
+					(data: MayanWallet['srcChains']) => ChainsComponent(data!, 'mayanId'),
 				),
 		})),
 		...['days', 'weeks', 'months'].map<ColumnDef<MayanWallet>>(

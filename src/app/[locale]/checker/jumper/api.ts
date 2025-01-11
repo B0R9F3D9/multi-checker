@@ -3,52 +3,42 @@ import axios from 'axios';
 import { getWeekStart, promiseAll } from '@/lib/utils';
 import type { Wallet } from '@/types/wallet';
 
-import type { OdosTxn, OdosTxnResponse, OdosWallet } from './types';
+import type { JumperTxn, JumperTxnResponse, JumperWallet } from './types';
 
-async function getTxns(
-	address: string,
-	page: number,
-): Promise<OdosTxnResponse> {
-	const resp = await axios.get<OdosTxnResponse>(
-		`https://api.odos.xyz/transaction-history/${address}`,
+async function getTxns(address: string): Promise<JumperTxn[]> {
+	const resp = await axios.get<JumperTxnResponse>(
+		'https://li.quest/v1/analytics/transfers',
 		{
 			params: {
-				page,
+				fromTimestamp: 1420823170,
+				status: 'ALL',
+				integrator: 'jumper.exchange',
+				wallet: address,
 			},
 		},
 	);
 
-	return resp.data!;
+	return resp.data.transfers!;
 }
 
-function processTxns(txns: OdosTxn[]): Partial<OdosWallet> {
-	txns = txns.filter(
-		txn =>
-			new Date(txn.block_time).getTime() > new Date('2024-12-16').getTime(),
-	);
-
+function processTxns(txns: JumperTxn[]): Partial<JumperWallet> {
 	const result = {
 		txns: txns.length,
 		volume: 0,
-		tokens: 0,
-		chains: [{ id: 0, txns: 0 }],
+		srcChains: [{ id: 0, txns: 0 }],
+		dstChains: [{ id: 0, txns: 0 }],
+		protocols: [{ name: '', txns: 0 }],
 		days: [{ date: '', txns: 0 }],
 		weeks: [{ date: '', txns: 0 }],
 		months: [{ date: '', txns: 0 }],
 	};
 
-	const tokensSet = new Set<string>();
-
 	for (const txn of txns) {
-		for (const input of txn.inputs) {
-			result.volume += input.amount_usd;
-			tokensSet.add(input.token_address);
-		}
-		for (const output of txn.outputs) {
-			tokensSet.add(output.token_address);
-		}
+		result.volume += parseFloat(txn.sending.amountUSD);
 
-		const date = new Date(txn.block_time).toISOString().split('T')[0];
+		const date = new Date(txn.sending.timestamp * 1000)
+			.toISOString()
+			.split('T')[0];
 		const day = result.days.find(day => day.date === date);
 		if (day) day.txns += 1;
 		else result.days.push({ date, txns: 1 });
@@ -62,9 +52,23 @@ function processTxns(txns: OdosTxn[]): Partial<OdosWallet> {
 		if (month) month.txns += 1;
 		else result.months.push({ date: date.slice(0, 7), txns: 1 });
 
-		const chain = result.chains.find(chain => chain.id === txn.chain_id);
-		if (chain) chain.txns += 1;
-		else result.chains.push({ id: txn.chain_id, txns: 1 });
+		const srcChain = result.srcChains.find(
+			chain => chain.id === txn.sending.chainId,
+		);
+		if (srcChain) srcChain.txns += 1;
+		else result.srcChains.push({ id: txn.sending.chainId, txns: 1 });
+
+		const dstChain = result.dstChains.find(
+			chain => chain.id === txn.receiving.chainId,
+		);
+		if (dstChain) dstChain.txns += 1;
+		else result.dstChains.push({ id: txn.receiving.chainId, txns: 1 });
+
+		const protocol = result.protocols.find(
+			protocol => protocol.name === txn.tool,
+		);
+		if (protocol) protocol.txns += 1;
+		else result.protocols.push({ name: txn.tool, txns: 1 });
 	}
 
 	result.days = result.days
@@ -79,53 +83,20 @@ function processTxns(txns: OdosTxn[]): Partial<OdosWallet> {
 			(a, b) =>
 				new Date(a.date + '-01').getTime() - new Date(b.date + '-01').getTime(),
 		);
-	result.chains = result.chains.filter(item => item.id !== 0);
-	result.tokens = tokensSet.size;
+	result.srcChains = result.srcChains
+		.filter(item => item.id !== 0)
+		.sort((a, b) => b.txns - a.txns);
+	result.dstChains = result.dstChains
+		.filter(item => item.id !== 0)
+		.sort((a, b) => b.txns - a.txns);
+	result.protocols = result.protocols.filter(item => item.name !== '');
 
 	return result;
 }
 
 async function fetchWallet(address: string, concurrentFetches: number) {
-	let txnsCount, txns, result;
-	try {
-		const init_request = await getTxns(address, 1);
-		txnsCount = init_request.totalCount - init_request.transactions.length;
-		txns = init_request.transactions;
-	} catch (err) {
-		txnsCount = null;
-		console.error(err);
-	}
-	try {
-		if (txnsCount && txnsCount > 0) {
-			const pages = Math.ceil(txnsCount / 10); // 10 txns per page
-			const requests = [];
-			for (let i = 2; i <= pages + 1; i++) {
-				requests.push(() => getTxns(address, i));
-			}
-
-			const responses = await promiseAll(requests, concurrentFetches);
-			responses.forEach(response => {
-				txns.push(...response.transactions);
-			});
-		}
-	} catch (err) {
-		txns = null;
-		console.error(err);
-	}
-	try {
-		if (txns) result = processTxns(txns);
-	} catch (err) {
-		result = {
-			txns: null,
-			volume: null,
-			fee: null,
-			days: null,
-			weeks: null,
-			months: null,
-		};
-		console.error(err);
-	}
-	return { ...result };
+	const txns = await getTxns(address);
+	return processTxns(txns);
 }
 
 export async function fetchWallets(
@@ -144,8 +115,9 @@ export async function fetchWallets(
 				console.error(err);
 				updateWallet(address, {
 					txns: null,
-					chains: null,
-					tokens: null,
+					srcChains: null,
+					dstChains: null,
+					protocols: null,
 					volume: null,
 					days: null,
 					weeks: null,

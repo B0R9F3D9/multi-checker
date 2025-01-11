@@ -1,16 +1,25 @@
-// 'use client';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { FaDiscord } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
+import { PiWarningCircle } from 'react-icons/pi';
 
 import { Button } from '@/components/ui/button';
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from '@/components/ui/dialog';
 import { PROJECTS } from '@/constants';
 import { Link } from '@/i18n/routing';
 import { Card, CardFooter, CardHeader, CardTitle } from '@/ui/card';
 
 export default function HomePage() {
 	const t = useTranslations('HomePage');
+	const tProject = useTranslations('Projects');
 
 	return (
 		<div className="flex flex-wrap justify-center gap-5 p-5">
@@ -31,17 +40,29 @@ export default function HomePage() {
 							</Link>
 						</CardHeader>
 
-						<CardTitle className="flex justify-center items-center">
-							<Button
-								className="text-center text-xl font-semibold inline-block p-0 mb-1"
-								variant="link"
-								asChild
-								disabled={project.isDisabled}
-							>
-								<Link href={project.isDisabled ? '#' : project.path}>
-									{project.name}
-								</Link>
-							</Button>
+						<CardTitle className="relative flex flex-row justify-center items-center gap-2 mb-2">
+							<Link href={project.isDisabled ? '#' : project.path}>
+								<h1 className="text-xl font-semibold hover:text-sky-300">
+									{project!.name}
+								</h1>
+							</Link>
+							{project!.hasDescription ? (
+								<Dialog>
+									<DialogTrigger>
+										<PiWarningCircle size={22} />
+									</DialogTrigger>
+									<DialogContent>
+										<DialogHeader>
+											<DialogTitle className="text-2xl text-center font-semibold">
+												{project!.name}
+											</DialogTitle>
+										</DialogHeader>
+										<DialogDescription>
+											{tProject(`${project!.name}.description`)}
+										</DialogDescription>
+									</DialogContent>
+								</Dialog>
+							) : null}
 						</CardTitle>
 
 						<CardFooter className="flex justify-center gap-2">

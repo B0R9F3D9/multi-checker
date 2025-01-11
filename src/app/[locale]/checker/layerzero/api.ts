@@ -10,8 +10,8 @@ function parseResult(txns: LayerzeroTxn[]): Partial<LayerzeroWallet> {
 		days: [{ date: '', txns: 0 }],
 		weeks: [{ date: '', txns: 0 }],
 		months: [{ date: '', txns: 0 }],
-		srcChains: [{ name: '', txns: 0 }],
-		dstChains: [{ name: '', txns: 0 }],
+		srcChains: [{ id: 0, txns: 0 }],
+		dstChains: [{ id: 0, txns: 0 }],
 		protocols: [{ id: '', name: '', txns: 0 }],
 		contracts: 0,
 	};
@@ -44,18 +44,15 @@ function parseResult(txns: LayerzeroTxn[]): Partial<LayerzeroWallet> {
 					txns: 1,
 				});
 		}
-
-		const srcChain = result.srcChains.find(
-			chain => chain.name === txn.srcChainKey,
-		);
+		if (txn.srcChainId < 30000) txn.srcChainId += 30000;
+		const srcChain = result.srcChains.find(c => c.id === txn.srcChainId);
 		if (srcChain) srcChain.txns += 1;
-		else result.srcChains.push({ name: txn.srcChainKey, txns: 1 });
+		else result.srcChains.push({ id: txn.srcChainId, txns: 1 });
 
-		const dstChain = result.dstChains.find(
-			chain => chain.name === txn.dstChainKey,
-		);
+		if (txn.dstChainId < 30000) txn.dstChainId += 30000;
+		const dstChain = result.dstChains.find(c => c.id === txn.dstChainId);
 		if (dstChain) dstChain.txns += 1;
-		else result.dstChains.push({ name: txn.dstChainKey, txns: 1 });
+		else result.dstChains.push({ id: txn.dstChainId, txns: 1 });
 
 		const date = new Date(txn.created * 1000).toISOString().split('T')[0];
 		const day = result.days.find(day => day.date === date);
@@ -77,10 +74,10 @@ function parseResult(txns: LayerzeroTxn[]): Partial<LayerzeroWallet> {
 	result.contracts = [...contractsSet].length;
 
 	result.srcChains = result.srcChains
-		.filter(item => item.name !== '')
+		.filter(item => item.id !== 0)
 		.sort((a, b) => b.txns - a.txns);
 	result.dstChains = result.dstChains
-		.filter(item => item.name !== '')
+		.filter(item => item.id !== 0)
 		.sort((a, b) => b.txns - a.txns);
 	result.protocols = result.protocols
 		.filter(item => item.id !== '')
@@ -97,7 +94,7 @@ function parseResult(txns: LayerzeroTxn[]): Partial<LayerzeroWallet> {
 			(a, b) =>
 				new Date(a.date + '-01').getTime() - new Date(b.date + '-01').getTime(),
 		);
-
+	console.log(result);
 	return result;
 }
 

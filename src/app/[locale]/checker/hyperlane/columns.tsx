@@ -2,6 +2,7 @@ import type { ColumnDef } from '@tanstack/react-table';
 import * as React from 'react';
 import { LuCopy, LuEyeOff, LuRotateCcw, LuTrash } from 'react-icons/lu';
 
+import { ChainsComponent } from '@/components/data-table/Chains';
 import {
 	getActionButton,
 	getCellComponent,
@@ -15,7 +16,6 @@ import { ACTION_LINKS } from '@/constants';
 import type { Toast } from '@/hooks/use-toast';
 import type { DateFrame } from '@/types/wallet';
 
-import { getChainsComponent } from './chains';
 import type { HyperlaneWallet } from './types';
 
 export function getColumns(
@@ -85,8 +85,7 @@ export function getColumns(
 					getCellComponent(
 						chainsType,
 						row.getValue,
-						(chains: HyperlaneWallet['srcChains']) =>
-							getChainsComponent(chains),
+						ChainsComponent,
 					),
 			}),
 		),

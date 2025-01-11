@@ -2,9 +2,9 @@ import type { ColumnDef } from '@tanstack/react-table';
 import * as React from 'react';
 import { LuCopy, LuEyeOff, LuRotateCcw, LuTrash } from 'react-icons/lu';
 
+import { ChainsComponent } from '@/components/data-table/Chains';
 import {
 	getCellComponent,
-	getChainsComponent,
 	getDatesComponent,
 	getDebankButton,
 	getHeaderComponent,
@@ -89,7 +89,7 @@ export function getColumns(
 			accessorKey: 'chains',
 			header: ({ column }) => getHeaderComponent('chains', column, t),
 			cell: ({ row }) =>
-				getCellComponent('chains', row.getValue, getChainsComponent),
+				getCellComponent('chains', row.getValue, ChainsComponent),
 		},
 		...['days', 'weeks', 'months'].map<ColumnDef<BebopWallet>>(
 			(dateFrame: string) => ({

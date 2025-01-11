@@ -33,8 +33,8 @@ function parseResult(txns: MayanTxn[]): Partial<MayanWallet> {
 		weeks: [{ date: '', txns: 0 }],
 		months: [{ date: '', txns: 0 }],
 		volume: 0,
-		srcChains: [{ name: '', txns: 0 }],
-		dstChains: [{ name: '', txns: 0 }],
+		srcChains: [{ id: 0, txns: 0 }],
+		dstChains: [{ id: 0, txns: 0 }],
 	};
 
 	for (const txn of txns) {
@@ -42,16 +42,16 @@ function parseResult(txns: MayanTxn[]): Partial<MayanWallet> {
 			parseFloat(txn.fromAmount) * parseFloat(txn.fromTokenPrice);
 
 		const srcChain = result.srcChains.find(
-			chain => chain.name === txn.sourceChain,
+			chain => chain.id === parseInt(txn.sourceChain),
 		);
 		if (srcChain) srcChain.txns += 1;
-		else result.srcChains.push({ name: txn.sourceChain, txns: 1 });
+		else result.srcChains.push({ id: parseInt(txn.sourceChain), txns: 1 });
 
 		const dstChain = result.dstChains.find(
-			chain => chain.name === txn.destChain,
+			chain => chain.id === parseInt(txn.destChain),
 		);
 		if (dstChain) dstChain.txns += 1;
-		else result.dstChains.push({ name: txn.destChain, txns: 1 });
+		else result.dstChains.push({ id: parseInt(txn.destChain), txns: 1 });
 
 		const date = txn.initiatedAt.split('T')[0];
 		const day = result.days.find(day => day.date === date);
@@ -69,10 +69,10 @@ function parseResult(txns: MayanTxn[]): Partial<MayanWallet> {
 	}
 
 	result.srcChains = result.srcChains
-		.filter(item => item.name !== '')
+		.filter(item => item.id !== 0)
 		.sort((a, b) => b.txns - a.txns);
 	result.dstChains = result.dstChains
-		.filter(item => item.name !== '')
+		.filter(item => item.id !== 0)
 		.sort((a, b) => b.txns - a.txns);
 	result.days = result.days
 		.filter(item => item.date !== '')

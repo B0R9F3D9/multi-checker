@@ -32,25 +32,24 @@ function parseResult(txns: HyperlaneTxn[]): Partial<HyperlaneWallet> {
 		days: [{ date: '', txns: 0 }],
 		weeks: [{ date: '', txns: 0 }],
 		months: [{ date: '', txns: 0 }],
-		srcChains: [{ name: '', txns: 0 }],
-		dstChains: [{ name: '', txns: 0 }],
+		srcChains: [{ id: 0, txns: 0 }],
+		dstChains: [{ id: 0, txns: 0 }],
 	};
 
 	for (const txn of txns) {
 		const srcChain = result.srcChains.find(
-			chain => chain.name === txn.origin_chain_id.toString(),
+			chain => chain.id === txn.origin_chain_id,
 		);
 		if (srcChain) srcChain.txns += 1;
-		else
-			result.srcChains.push({ name: txn.origin_chain_id.toString(), txns: 1 });
+		else result.srcChains.push({ id: txn.origin_chain_id, txns: 1 });
 
 		const dstChain = result.dstChains.find(
-			chain => chain.name === txn.destination_chain_id.toString(),
+			chain => chain.id === txn.destination_chain_id,
 		);
 		if (dstChain) dstChain.txns += 1;
 		else
 			result.dstChains.push({
-				name: txn.destination_chain_id.toString(),
+				id: txn.destination_chain_id,
 				txns: 1,
 			});
 
@@ -70,10 +69,10 @@ function parseResult(txns: HyperlaneTxn[]): Partial<HyperlaneWallet> {
 	}
 
 	result.srcChains = result.srcChains
-		.filter(item => item.name !== '')
+		.filter(item => item.id !== 0)
 		.sort((a, b) => b.txns - a.txns);
 	result.dstChains = result.dstChains
-		.filter(item => item.name !== '')
+		.filter(item => item.id !== 0)
 		.sort((a, b) => b.txns - a.txns);
 	result.days = result.days
 		.filter(item => item.date !== '')

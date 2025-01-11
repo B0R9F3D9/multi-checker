@@ -1,7 +1,4 @@
 import { useTranslations } from 'next-intl';
-import { FaGithub } from 'react-icons/fa';
-
-import { Button } from '@/components/ui/button';
 
 export default function HomePage() {
 	const t = useTranslations('AboutPage');
@@ -11,7 +8,7 @@ export default function HomePage() {
 			<h1 className="text-3xl font-bold">{t('title')}</h1>
 			<p className="text-lg">
 				{t.rich('description', {
-					button: chunks => (
+					button: () => (
 						<a
 							className="hover:text-sky-300"
 							href="https://github.com/b0r9f3d9"

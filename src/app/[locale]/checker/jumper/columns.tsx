@@ -2,9 +2,9 @@ import type { ColumnDef } from '@tanstack/react-table';
 import * as React from 'react';
 import { LuCopy, LuEyeOff, LuRotateCcw, LuTrash } from 'react-icons/lu';
 
+import { ChainsComponent } from '@/components/data-table/Chains';
 import {
 	getCellComponent,
-	getChainsComponent,
 	getDatesComponent,
 	getDebankButton,
 	getHeaderComponent,
@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import type { Toast } from '@/hooks/use-toast';
 import type { DateFrame } from '@/types/wallet';
 
-import type { OdosWallet } from './types';
+import type { JumperWallet } from './types';
 
 export function getColumns(
 	toast: (options: Toast) => {
@@ -25,7 +25,7 @@ export function getColumns(
 	recheckWallet: (address: string) => Promise<void>,
 	deleteWallet: (address: string) => void,
 	t: (t: string) => string,
-): ColumnDef<OdosWallet>[] {
+): ColumnDef<JumperWallet>[] {
 	return [
 		{
 			accessorKey: 'id',
@@ -85,13 +85,20 @@ export function getColumns(
 					}).format(value),
 				),
 		},
-		{
-			accessorKey: 'chains',
-			header: ({ column }) => getHeaderComponent('chains', column, t),
-			cell: ({ row }) =>
-				getCellComponent('chains', row.getValue, getChainsComponent),
-		},
-		...['days', 'weeks', 'months'].map<ColumnDef<OdosWallet>>(
+		...['srcChains', 'dstChains'].map<ColumnDef<JumperWallet>>(
+			(chainsType: string) => ({
+				accessorKey: chainsType,
+				header: ({ column }) => getHeaderComponent(chainsType, column, t),
+				cell: ({ row }) =>
+					getCellComponent(
+						chainsType,
+						row.getValue,
+						(data: JumperWallet['srcChains']) =>
+							ChainsComponent(data!, 'jumperId'),
+					),
+			}),
+		),
+		...['days', 'weeks', 'months'].map<ColumnDef<JumperWallet>>(
 			(dateFrame: string) => ({
 				accessorKey: dateFrame,
 				header: ({ column }) => getHeaderComponent(dateFrame, column, t),

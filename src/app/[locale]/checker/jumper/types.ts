@@ -1,36 +1,31 @@
 import type { DateFrame } from '@/types/wallet';
 
-export type OdosWallet = {
+export type JumperWallet = {
 	id: number;
 	address: string;
 	txns?: number | null;
-	chains?: { id: number; txns: number }[] | null;
-	tokens?: number | null;
 	volume?: number | null;
+	srcChains?: { id: number; txns: number }[] | null;
+	dstChains?: { id: number; txns: number }[] | null;
+	protocols?: { name: string; txns: number }[] | null;
 	days?: DateFrame | null;
 	weeks?: DateFrame | null;
 	months?: DateFrame | null;
 };
 
-type OdosToken = {
+type JumperToken = {
 	amount: string;
-	amount_usd: number;
-	token_address: string;
-	token_decimals: number;
-	usd_price: number;
+	amountUSD: string;
+	chainId: number;
+	timestamp: number;
 };
 
-export type OdosTxn = {
-	block_time: string;
-	chain_id: number;
-	hash: string;
-	inputs: OdosToken[];
-	outputs: OdosToken[];
-	success: boolean;
-	order: number;
+export type JumperTxn = {
+	sending: JumperToken;
+	receiving: JumperToken;
+	tool: string;
 };
 
-export type OdosTxnResponse = {
-	totalCount: number;
-	transactions: OdosTxn[];
+export type JumperTxnResponse = {
+	transfers: JumperTxn[];
 };

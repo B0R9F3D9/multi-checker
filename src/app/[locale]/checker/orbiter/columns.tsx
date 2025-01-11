@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import type { Toast } from '@/hooks/use-toast';
 import type { DateFrame } from '@/types/wallet';
 
-import type { OdosWallet } from './types';
+import type { OrbiterWallet } from './types';
 
 export function getColumns(
 	toast: (options: Toast) => {
@@ -25,7 +25,7 @@ export function getColumns(
 	recheckWallet: (address: string) => Promise<void>,
 	deleteWallet: (address: string) => void,
 	t: (t: string) => string,
-): ColumnDef<OdosWallet>[] {
+): ColumnDef<OrbiterWallet>[] {
 	return [
 		{
 			accessorKey: 'id',
@@ -86,12 +86,29 @@ export function getColumns(
 				),
 		},
 		{
-			accessorKey: 'chains',
-			header: ({ column }) => getHeaderComponent('chains', column, t),
-			cell: ({ row }) =>
-				getCellComponent('chains', row.getValue, ChainsComponent),
+			accessorKey: 'points',
+			header: ({ column }) => getHeaderComponent('points', column, t),
+			cell: ({ row }) => getCellComponent('points', row.getValue),
 		},
-		...['days', 'weeks', 'months'].map<ColumnDef<OdosWallet>>(
+		{
+			accessorKey: 'rank',
+			header: ({ column }) => getHeaderComponent('rank', column, t),
+			cell: ({ row }) =>
+				getCellComponent('rank', row.getValue, (data: number) =>
+					data.toLocaleString(),
+				),
+		},
+		...['srcChains', 'dstChains'].map<ColumnDef<OrbiterWallet>>(chainsType => ({
+			accessorKey: chainsType,
+			header: ({ column }) => getHeaderComponent(chainsType, column, t),
+			cell: ({ row }) =>
+				getCellComponent(
+					chainsType,
+					row.getValue,
+					ChainsComponent,
+				),
+		})),
+		...['days', 'weeks', 'months'].map<ColumnDef<OrbiterWallet>>(
 			(dateFrame: string) => ({
 				accessorKey: dateFrame,
 				header: ({ column }) => getHeaderComponent(dateFrame, column, t),

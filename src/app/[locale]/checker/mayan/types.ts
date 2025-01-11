@@ -8,8 +8,8 @@ export type MayanWallet = {
 	weeks?: DateFrame | null;
 	months?: DateFrame | null;
 	volume?: number | null;
-	srcChains?: { name: string; txns: number }[] | null;
-	dstChains?: { name: string; txns: number }[] | null;
+	srcChains?: { id: number; txns: number }[] | null;
+	dstChains?: { id: number; txns: number }[] | null;
 };
 
 export type MayanTxn = {
