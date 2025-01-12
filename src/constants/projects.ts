@@ -23,6 +23,7 @@ export const PROJECTS: Project[] = [
 		path: '/checker/odos',
 		twitter: 'https://x.com/odosprotocol',
 		discord: 'https://discord.com/invite/odos',
+		hasDescription: true,
 	},
 	{
 		name: 'Bebop',

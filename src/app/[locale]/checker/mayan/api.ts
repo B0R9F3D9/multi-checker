@@ -105,6 +105,15 @@ export async function fetchWallets(
 	await promiseAll(
 		addresses.map(address => async () => {
 			try {
+				updateWallet(address, {
+					txns: undefined,
+					days: undefined,
+					weeks: undefined,
+					months: undefined,
+					volume: undefined,
+					srcChains: undefined,
+					dstChains: undefined,
+				});
 				const result = await fetchWallet(address, concurrentFetches);
 				updateWallet(address, result);
 			} catch (err) {
