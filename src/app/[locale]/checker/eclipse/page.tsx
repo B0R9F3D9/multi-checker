@@ -27,7 +27,8 @@ import { getColumns } from './columns';
 const project = getProject('eclipse');
 
 export default function CheckerPage() {
-	const t = useTranslations('Projects');
+	const t = useTranslations('CheckerPage');
+	const tProject = useTranslations('Projects');
 	const { toast } = useToast();
 	const {
 		wallets,
@@ -85,7 +86,7 @@ export default function CheckerPage() {
 								</DialogTitle>
 							</DialogHeader>
 							<DialogDescription>
-								{t(`${project!.name}.description`)}
+								{tProject(`${project!.name}.description`)}
 							</DialogDescription>
 						</DialogContent>
 					</Dialog>

@@ -28,6 +28,7 @@ const project = getProject('layerzero');
 
 export default function CheckerPage() {
 	const t = useTranslations('CheckerPage');
+	const tProject = useTranslations('Projects');
 	const { toast } = useToast();
 	const {
 		wallets,
@@ -85,7 +86,7 @@ export default function CheckerPage() {
 								</DialogTitle>
 							</DialogHeader>
 							<DialogDescription>
-								{t(`Projects.${project!.name}.description`)}
+								{tProject(`${project!.name}.description`)}
 							</DialogDescription>
 						</DialogContent>
 					</Dialog>
