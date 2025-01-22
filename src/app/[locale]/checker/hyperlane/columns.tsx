@@ -103,7 +103,7 @@ export function getColumns(
 					{getActionButton(
 						row.getValue('address'),
 						ACTION_LINKS.hyperlanescan,
-						'/Hyperlane.webp',
+						'/hyperlane.webp',
 					)}
 					{row.getValue<string>('address').startsWith('0x')
 						? getDebankButton(row.getValue('address'))
