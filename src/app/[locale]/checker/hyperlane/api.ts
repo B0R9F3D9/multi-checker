@@ -1,9 +1,22 @@
 import axios from 'axios';
 
-import { getWeekStart, promiseAll, solanaAddressToBytea } from '@/lib/utils';
+import { base58Decode, getWeekStart, promiseAll } from '@/lib/utils';
 import type { Wallet } from '@/types/wallet';
 
 import type { HyperlaneResponse, HyperlaneTxn, HyperlaneWallet } from './types';
+
+export function solanaAddressToBytea(address: string): string {
+	if (address.length !== 44) {
+		throw new Error('Invalid Solana address length.');
+	}
+
+	const bytes = base58Decode(address);
+	if (bytes.length !== 32) {
+		throw new Error('Invalid Solana address.');
+	}
+
+	return Buffer.from(bytes).toString('hex');
+}
 
 async function getTxns(address: string): Promise<HyperlaneTxn[]> {
 	const resp = await axios.post<HyperlaneResponse>(
@@ -14,7 +27,7 @@ async function getTxns(address: string): Promise<HyperlaneTxn[]> {
 			variables: {
 				search: address.startsWith('0x')
 					? '\\x' + address.toLowerCase().slice(2)
-					: solanaAddressToBytea(address),
+					: '\\x' + solanaAddressToBytea(address),
 			},
 		},
 	);

@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 
+import { toChecksumAddress } from '@/lib/utils';
 import type { Wallet } from '@/types/wallet';
 
 interface CheckerState {
@@ -71,7 +72,7 @@ export const useCheckerStore = create<CheckerState>((set, get) => ({
 		} = get();
 		setShowProgress(wallets.length > 1);
 		await fetchWallets(
-			wallets.map(wallet => wallet.address),
+			wallets.map(wallet => toChecksumAddress(wallet.address)),
 			concurrentFetches,
 			concurrentWallets,
 			updateWallet,

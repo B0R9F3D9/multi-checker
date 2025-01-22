@@ -1,6 +1,6 @@
-import { PublicKey } from '@solana/web3.js';
 import axios from 'axios';
 import { type ClassValue, clsx } from 'clsx';
+import { keccak256 } from 'js-sha3';
 
 import { PROJECTS } from '@/constants';
 
@@ -84,7 +84,54 @@ export function getWeekStart(date: string) {
 	return d.toISOString().split('T')[0];
 }
 
-export function solanaAddressToBytea(address: string): string {
-	const bytes = new PublicKey(address).toBytes();
-	return '\\x' + Buffer.from(bytes).toString('hex');
+export function base58Decode(input: string): Uint8Array {
+	const BASE58_ALPHABET =
+		'123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+	const base = BASE58_ALPHABET.length;
+	const result: number[] = [];
+
+	for (const char of input) {
+		const charIndex = BASE58_ALPHABET.indexOf(char);
+		if (charIndex === -1) {
+			throw new Error(`Invalid base58 character: ${char}`);
+		}
+
+		let carry = charIndex;
+		for (let j = 0; j < result.length; ++j) {
+			const value = result[j] * base + carry;
+			result[j] = value & 0xff;
+			carry = value >> 8;
+		}
+
+		while (carry > 0) {
+			result.push(carry & 0xff);
+			carry >>= 8;
+		}
+	}
+
+	for (const char of input) {
+		if (char === BASE58_ALPHABET[0]) {
+			result.push(0);
+		} else {
+			break;
+		}
+	}
+
+	return new Uint8Array(result.reverse());
+}
+
+export function toChecksumAddress(address: string): string {
+	if (!/^0x[a-fA-F0-9]{40}$/.test(address)) return address;
+
+	const lowercaseAddress = address.toLowerCase().replace(/^0x/, '');
+	const hash = keccak256(lowercaseAddress);
+
+	let checksumAddress = '0x';
+	for (let i = 0; i < lowercaseAddress.length; i++) {
+		const char = lowercaseAddress[i];
+		const hashChar = parseInt(hash[i], 16);
+		if (hashChar > 7) checksumAddress += char.toUpperCase();
+		else checksumAddress += char;
+	}
+	return checksumAddress;
 }
