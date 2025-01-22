@@ -18,7 +18,7 @@ import {
 import { Progress } from '@/components/ui/progress';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { getProject, splitAddresses } from '@/lib/utils';
+import { getProject, splitAddresses, toChecksumAddress } from '@/lib/utils';
 import { useCheckerStore } from '@/stores/checkerStore';
 
 import { fetchWallets } from './api';
@@ -48,7 +48,7 @@ export default function CheckerPage() {
 		setWallets(
 			splitAddresses(addresses).map((address, i) => ({
 				id: i + 1,
-				address,
+				address: toChecksumAddress(address),
 			})),
 		);
 		await checkWallets(setShowProgress, setProgress);

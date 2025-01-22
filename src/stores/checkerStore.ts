@@ -72,7 +72,7 @@ export const useCheckerStore = create<CheckerState>((set, get) => ({
 		} = get();
 		setShowProgress(wallets.length > 1);
 		await fetchWallets(
-			wallets.map(wallet => toChecksumAddress(wallet.address)),
+			wallets.map(wallet => wallet.address),
 			concurrentFetches,
 			concurrentWallets,
 			updateWallet,
