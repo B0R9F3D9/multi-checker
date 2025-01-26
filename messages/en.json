@@ -55,7 +55,8 @@
 		"tokens": "Tokens",
 		"taps": "Taps",
 		"points": "Points",
-		"rank": "Rank"
+		"rank": "Rank",
+		"pairs": "Pairs"
 	},
 	"Projects": {
 		"LayerZero": {

@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
 					address,
 				},
 				headers: {
-					Referer: `https://eclipsescan.xyz`,
+					Referer: 'https://eclipsescan.xyz',
 				},
 			},
 		);

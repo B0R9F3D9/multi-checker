@@ -1,40 +1,70 @@
 import axios from 'axios';
+import csv from 'csvtojson';
 
 import { getWeekStart, promiseAll } from '@/lib/utils';
 import type { Wallet } from '@/types/wallet';
 
-import type { BebopTxn, BebopTxnResponse, BebopWallet } from './types';
+import type { PhoenixTxn, PhoenixTxnsResponse, PhoenixWallet } from './types';
 
-async function getTxns(address: string): Promise<BebopTxn[]> {
-	const resp = await axios.get<BebopTxnResponse>(
-		'https://api.bebop.xyz/history/v2/trades',
+async function getTxns(address: string): Promise<PhoenixTxn[]> {
+	const resp = await axios.get<PhoenixTxnsResponse>(
+		'https://9senbezsz3.execute-api.us-east-1.amazonaws.com/Prod/get-full-trade-history-csv',
 		{
 			params: {
-				start: new Date('2022-06-09').getTime() * 1000000,
-				end: new Date().getTime() * 1000000,
-				size: 100000,
-				wallet_address: address,
+				start_timestamp: 0,
+				trader: address,
+			},
+			headers: {
+				'x-api-key': 'CmXNmY4IeA4MxiKv9KS82892zk2TV3fV2gma8iia',
 			},
 		},
 	);
 
-	return resp.data.results!;
+	const csvResp = await axios.get(resp.data.url!);
+	const transactions: PhoenixTxn[] = await csv({
+		noheader: false,
+		headers: [
+			'date',
+			'market',
+			'trade_direction',
+			'price',
+			'base_units_filled',
+			'trade_type',
+			'fees_paid_in_quote_units',
+			'slot',
+			'unix_timestamp',
+			'taker_transaction',
+			'maker_transaction',
+		],
+	}).fromString(csvResp.data);
+
+	return transactions.map(txn => ({
+		...txn,
+		price: parseFloat(String(txn.price)),
+		base_units_filled: parseFloat(String(txn.base_units_filled)),
+		fees_paid_in_quote_units: parseFloat(String(txn.fees_paid_in_quote_units)),
+		slot: parseInt(String(txn.slot), 10),
+		unix_timestamp: parseInt(String(txn.unix_timestamp), 10),
+	}));
 }
 
-function processTxns(txns: BebopTxn[]): Partial<BebopWallet> {
+function processTxns(txns: PhoenixTxn[]): Partial<PhoenixWallet> {
 	const result = {
 		txns: txns.length,
 		volume: 0,
-		chains: [{ id: 0, txns: 0 }],
+		pairs: 0,
 		days: [{ date: '', txns: 0 }],
 		weeks: [{ date: '', txns: 0 }],
 		months: [{ date: '', txns: 0 }],
 	};
 
-	for (const txn of txns) {
-		result.volume += txn.volumeUsd;
+	const pairsSet = new Set<string>();
 
-		const date = new Date(txn.timestamp).toISOString().split('T')[0];
+	for (const txn of txns) {
+		pairsSet.add(txn.market);
+		result.volume += txn.price * txn.base_units_filled;
+
+		const date = new Date(txn.date).toISOString().split('T')[0];
 		const day = result.days.find(day => day.date === date);
 		if (day) day.txns += 1;
 		else result.days.push({ date, txns: 1 });
@@ -47,10 +77,6 @@ function processTxns(txns: BebopTxn[]): Partial<BebopWallet> {
 		const month = result.months.find(month => month.date === date.slice(0, 7));
 		if (month) month.txns += 1;
 		else result.months.push({ date: date.slice(0, 7), txns: 1 });
-
-		const chain = result.chains.find(chain => chain.id === txn.chain_id);
-		if (chain) chain.txns += 1;
-		else result.chains.push({ id: txn.chain_id, txns: 1 });
 	}
 
 	result.days = result.days
@@ -65,9 +91,7 @@ function processTxns(txns: BebopTxn[]): Partial<BebopWallet> {
 			(a, b) =>
 				new Date(a.date + '-01').getTime() - new Date(b.date + '-01').getTime(),
 		);
-	result.chains = result.chains
-		.filter(item => item.id !== 0)
-		.sort((a, b) => b.txns - a.txns);
+	result.pairs = pairsSet.size;
 
 	return result;
 }

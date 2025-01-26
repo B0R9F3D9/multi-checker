@@ -25,9 +25,7 @@ export default function HomePage() {
 		<div className="flex flex-wrap justify-center gap-5 p-5">
 			{PROJECTS.map(project => (
 				<div key={project.name} className="relative max-w-xs w-full">
-					<Card
-						className={`shadow-md ${project.isDisabled ? 'opacity-50' : ''}`}
-					>
+					<Card className="shadow-md">
 						<CardHeader className="flex items-center justify-center">
 							<Link href={project.isDisabled ? '#' : project.path}>
 								<Image
@@ -66,45 +64,23 @@ export default function HomePage() {
 						</CardTitle>
 
 						<CardFooter className="flex justify-center gap-2">
-							<Button
-								variant="outline"
-								size="icon"
-								disabled={project.isDisabled}
-							>
-								<a
-									href={project.isDisabled ? '#' : project.discord}
-									target="_blank"
-								>
+							<Button variant="outline" size="icon">
+								<a href={project.discord} target="_blank">
 									<FaDiscord />
 								</a>
 							</Button>
-							<Link href={project.isDisabled ? '#' : project.path}>
-								<Button variant="outline" disabled={project.isDisabled}>
-									{t('goToChecker')}
-								</Button>
-							</Link>
-							<Button
-								variant="outline"
-								size="icon"
-								disabled={project.isDisabled}
-							>
-								<a
-									href={project.isDisabled ? '#' : project.twitter}
-									target="_blank"
-								>
+							<Button variant="outline" disabled={project.isDisabled}>
+								<Link href={project.isDisabled ? '#' : project.path}>
+									{project.isDisabled ? t('comingSoon') : t('goToChecker')}
+								</Link>
+							</Button>
+							<Button variant="outline" size="icon">
+								<a href={project.twitter} target="_blank">
 									<FaXTwitter />
 								</a>
 							</Button>
 						</CardFooter>
 					</Card>
-
-					{project.isDisabled && (
-						<div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-md">
-							<span className="text-white text-lg font-semibold -rotate-45">
-								{t('comingSoon')}
-							</span>
-						</div>
-					)}
 				</div>
 			))}
 		</div>

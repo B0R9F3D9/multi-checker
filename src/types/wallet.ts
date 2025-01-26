@@ -6,6 +6,7 @@ import type { LayerzeroWallet } from '@/app/[locale]/checker/layerzero/types';
 import type { MayanWallet } from '@/app/[locale]/checker/mayan/types';
 import type { OdosWallet } from '@/app/[locale]/checker/odos/types';
 import type { OrbiterWallet } from '@/app/[locale]/checker/orbiter/types';
+import type { PhoenixWallet } from '@/app/[locale]/checker/phoenix/types';
 
 export type Wallet =
 	| LayerzeroWallet
@@ -15,6 +16,7 @@ export type Wallet =
 	| MayanWallet
 	| HyperlaneWallet
 	| JumperWallet
-	| OrbiterWallet;
+	| OrbiterWallet
+	| PhoenixWallet;
 
 export type DateFrame = { date: string; txns: number }[];

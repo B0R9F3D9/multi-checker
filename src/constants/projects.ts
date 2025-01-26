@@ -60,4 +60,11 @@ export const PROJECTS: Project[] = [
 		twitter: 'https://x.com/Orbiter_Finance',
 		discord: 'https://discord.com/invite/FbztTBvnBT',
 	},
+	{
+		name: 'Phoenix Trade',
+		image: '/phoenix.webp',
+		path: '/checker/phoenix',
+		twitter: 'https://x.com/PhoenixTrade',
+		discord: 'https://discord.com/invite/ESaTYGzqpd',
+	},
 ];
