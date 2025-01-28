@@ -7,6 +7,8 @@ export const PROJECTS: Project[] = [
 		path: '/checker/layerzero',
 		twitter: 'https://x.com/LayerZero_Core',
 		discord: 'https://discord.com/invite/ktbvm8Nkcr',
+		category: 'bridge',
+		chain: ['evm', 'svm'],
 		hasDescription: true,
 	},
 	{
@@ -15,6 +17,8 @@ export const PROJECTS: Project[] = [
 		path: '/checker/eclipse',
 		twitter: 'https://x.com/eclipsefnd',
 		discord: 'https://discord.com/invite/eclipse-fnd',
+		category: 'chain',
+		chain: 'svm',
 		hasDescription: true,
 	},
 	{
@@ -23,6 +27,8 @@ export const PROJECTS: Project[] = [
 		path: '/checker/odos',
 		twitter: 'https://x.com/odosprotocol',
 		discord: 'https://discord.com/invite/odos',
+		category: 'swap',
+		chain: 'evm',
 		hasDescription: true,
 	},
 	{
@@ -31,6 +37,8 @@ export const PROJECTS: Project[] = [
 		path: '/checker/bebop',
 		twitter: 'https://x.com/bebop_dex',
 		discord: 'https://discord.com/invite/bebop',
+		category: 'swap',
+		chain: 'evm',
 	},
 	{
 		name: 'Mayan',
@@ -38,6 +46,8 @@ export const PROJECTS: Project[] = [
 		path: '/checker/mayan',
 		twitter: 'https://x.com/MayanFinance',
 		discord: 'https://discord.com/invite/mayanfinance',
+		category: 'bridge',
+		chain: ['evm', 'svm'],
 	},
 	{
 		name: 'Hyperlane',
@@ -45,6 +55,8 @@ export const PROJECTS: Project[] = [
 		path: '/checker/hyperlane',
 		twitter: 'https://x.com/hyperlane',
 		discord: 'https://discord.gg/invite/VK9ZUy3aTV',
+		category: 'bridge',
+		chain: ['evm', 'svm', 'cosmos'],
 	},
 	{
 		name: 'Jumper',
@@ -52,6 +64,8 @@ export const PROJECTS: Project[] = [
 		path: '/checker/jumper',
 		twitter: 'https://x.com/JumperExchange',
 		discord: 'https://discord.com/invite/jumperexchange',
+		category: 'swap',
+		chain: ['evm', 'svm'],
 	},
 	{
 		name: 'Orbiter',
@@ -59,6 +73,8 @@ export const PROJECTS: Project[] = [
 		path: '/checker/orbiter',
 		twitter: 'https://x.com/Orbiter_Finance',
 		discord: 'https://discord.com/invite/FbztTBvnBT',
+		category: 'bridge',
+		chain: ['evm', 'svm'],
 	},
 	{
 		name: 'Phoenix Trade',
@@ -66,5 +82,26 @@ export const PROJECTS: Project[] = [
 		path: '/checker/phoenix',
 		twitter: 'https://x.com/PhoenixTrade',
 		discord: 'https://discord.com/invite/ESaTYGzqpd',
+		category: 'swap',
+		chain: 'svm',
+	},
+	{
+		name: 'Meteora',
+		image: '/meteora.webp',
+		path: '/checker/meteora',
+		twitter: 'https://x.com/MeteoraAG',
+		discord: 'https://discord.com/invite/meteora',
+		category: 'other',
+		chain: 'svm',
+	},
+	{
+		name: 'Jupiter',
+		image: '/jupiter.webp',
+		path: '/checker/meteora',
+		twitter: 'https://x.com/JupiterExchange',
+		discord: 'https://discord.com/invite/JUP',
+		category: 'swap',
+		chain: 'svm',
+		isDisabled: true,
 	},
 ];

@@ -56,7 +56,8 @@
 		"taps": "Taps",
 		"points": "Points",
 		"rank": "Rank",
-		"pairs": "Pairs"
+		"fees": "Fees",
+		"positions": "Positions"
 	},
 	"Projects": {
 		"LayerZero": {

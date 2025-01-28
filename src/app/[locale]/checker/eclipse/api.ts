@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 import { getTokenPrice, getWeekStart, promiseAll } from '@/lib/utils';
-import { generateUUID } from '@/lib/utils';
+import { generateUUID4 } from '@/lib/utils';
 import type { Wallet } from '@/types/wallet';
 
 import type {
@@ -94,7 +94,7 @@ async function fetchAddressTaps(address: string) {
 					commitment: 'confirmed',
 				},
 			],
-			id: generateUUID(),
+			id: generateUUID4(),
 		},
 	);
 
