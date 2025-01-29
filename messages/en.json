@@ -57,7 +57,8 @@
 		"points": "Points",
 		"rank": "Rank",
 		"fees": "Fees",
-		"positions": "Positions"
+		"positions": "Positions",
+		"pairs": "Pairs"
 	},
 	"Projects": {
 		"LayerZero": {
