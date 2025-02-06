@@ -110,7 +110,7 @@ async function getSignatures(
 	return txns.filter(txn => txn.err === null);
 }
 
-async function fetchTransactions(txnHashes: HeliusSignature[]) {
+async function fetchTxnsBatch(txnHashes: HeliusSignature[]) {
 	const requests = txnHashes.map(txnHash => ({
 		id: generateUUID4(),
 		jsonrpc: '2.0',
@@ -142,7 +142,7 @@ export async function getTxns(
 	}
 
 	const tasks = batches.map(
-		batch => async () => await fetchTransactions(batch),
+		batch => async () => await fetchTxnsBatch(batch),
 	);
 
 	return (await promiseAll(tasks, concurrentFetches)).flat();

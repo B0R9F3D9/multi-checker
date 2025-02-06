@@ -112,7 +112,7 @@ export async function fetchWallets(
 			try {
 				updateWallet(address, {
 					txns: undefined,
-					chains: undefined,
+					pairs: undefined,
 					volume: undefined,
 					days: undefined,
 					weeks: undefined,
@@ -124,7 +124,7 @@ export async function fetchWallets(
 				console.error(err);
 				updateWallet(address, {
 					txns: null,
-					chains: null,
+					pairs: null,
 					volume: null,
 					days: null,
 					weeks: null,
