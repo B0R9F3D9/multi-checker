@@ -98,7 +98,7 @@ function processTxns(txns: LayerzeroTxn[]): Partial<LayerzeroWallet> {
 
 async function fetchWallet(address: string, concurrentFetches: number) {
 	const resp = await axios
-		.get<LayerzeroResponse>(`/api/layerzero/${address}`)
+		.get<LayerzeroResponse>(`/api/checker/layerzero?address=${address}`)
 		.then(res => res.data);
 	return {
 		txns: resp.result.data.count,

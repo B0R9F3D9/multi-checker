@@ -85,6 +85,19 @@ export function getColumns(
 					}).format(value),
 				),
 		},
+		{
+			accessorKey: 'rank',
+			header: ({ column }) => getHeaderComponent('rank', column, t),
+			cell: ({ row }) =>
+				getCellComponent('rank', row.getValue, (value: number) =>
+					value.toLocaleString(),
+				),
+		},
+		{
+			accessorKey: 'points',
+			header: ({ column }) => getHeaderComponent('points', column, t),
+			cell: ({ row }) => getCellComponent('points', row.getValue),
+		},
 		...['srcChains', 'dstChains'].map<ColumnDef<JumperWallet>>(
 			(chainsType: string) => ({
 				accessorKey: chainsType,

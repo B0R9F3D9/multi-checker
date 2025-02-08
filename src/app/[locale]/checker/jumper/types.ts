@@ -5,6 +5,8 @@ export type JumperWallet = {
 	address: string;
 	txns?: number | null;
 	volume?: number | null;
+	rank?: number | null;
+	points?: number | null;
 	srcChains?: { id: number; txns: number }[] | null;
 	dstChains?: { id: number; txns: number }[] | null;
 	protocols?: { name: string; txns: number; id: string }[] | null;
@@ -28,4 +30,20 @@ export type JumperTxn = {
 
 export type JumperTxnResponse = {
 	transfers: JumperTxn[];
+};
+
+export type JumperRankPointsResponse = {
+	status: number;
+	data: {
+		id: string;
+		walletAddress: string;
+		points: string;
+		position: string;
+	};
+	message: string;
+	meta: {
+		timestamp: string;
+		path: string;
+		method: string;
+	};
 };

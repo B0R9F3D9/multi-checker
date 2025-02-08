@@ -3,7 +3,25 @@ import axios from 'axios';
 import { getWeekStart, promiseAll } from '@/lib/utils';
 import type { Wallet } from '@/types/wallet';
 
-import type { JumperTxn, JumperTxnResponse, JumperWallet } from './types';
+import type {
+	JumperRankPointsResponse,
+	JumperTxn,
+	JumperTxnResponse,
+	JumperWallet,
+} from './types';
+
+async function getPointsRank(
+	address: string,
+): Promise<{ points: number; rank: number }> {
+	const resp = await axios.get<JumperRankPointsResponse>(
+		`/api/checker/jumper?address=${address}`,
+	);
+	if (resp.data.status !== 200) throw new Error(resp.data.message);
+	return {
+		points: parseInt(resp.data.data.points!),
+		rank: parseInt(resp.data.data.position!),
+	};
+}
 
 async function getTxns(address: string): Promise<JumperTxn[]> {
 	const resp = await axios.get<JumperTxnResponse>(
@@ -95,8 +113,30 @@ function processTxns(txns: JumperTxn[]): Partial<JumperWallet> {
 }
 
 async function fetchWallet(address: string, concurrentFetches: number) {
-	const txns = await getTxns(address);
-	return processTxns(txns);
+	let txns: JumperTxn[], rank, points;
+
+	try {
+		txns = await getTxns(address);
+	} catch (err) {
+		console.error(err);
+		txns = [];
+	}
+
+	try {
+		const rankPoints = await getPointsRank(address);
+		rank = rankPoints.rank;
+		points = rankPoints.points;
+	} catch (err) {
+		console.error(err);
+		rank = null;
+		points = null;
+	}
+
+	return {
+		...processTxns(txns),
+		rank,
+		points,
+	};
 }
 
 export async function fetchWallets(
