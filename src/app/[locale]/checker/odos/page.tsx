@@ -4,6 +4,7 @@ import { DialogDescription, DialogTitle } from '@radix-ui/react-dialog';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
+import { FaRegTrashAlt } from 'react-icons/fa';
 import { PiWarningCircle } from 'react-icons/pi';
 
 import { DataTable } from '@/components/data-table/DataTable';
@@ -54,6 +55,10 @@ export default function CheckerPage() {
 		await checkWallets(setShowProgress, setProgress);
 	}
 
+	async function clearIDB() {
+		if (window.confirm(t('clearIDB'))) window.indexedDB.deleteDatabase('odos');
+	}
+
 	useEffect(() => {
 		setWallets([]);
 		setFetchWallets(fetchWallets);
@@ -98,9 +103,12 @@ export default function CheckerPage() {
 				disabled={!showAddresses}
 				placeholder={t('addressesPlaceholder')}
 				onChange={e => setAddresses(e.target.value)}
-				className="w-full max-w-lg"
+				className="w-full max-w-lg text-lg"
 			/>
 			<div className="flex flex-row gap-2 w-full max-w-lg">
+				<Button onClick={clearIDB} size="icon" variant="outline">
+					<FaRegTrashAlt />
+				</Button>
 				<Button
 					onClick={handleCheckWallets}
 					disabled={addresses.trim().length === 0}

@@ -1,5 +1,6 @@
 import axios from 'axios';
 
+import { DatabaseService } from '@/lib/db';
 import { getWeekStart, promiseAll } from '@/lib/utils';
 import type { Wallet } from '@/types/wallet';
 
@@ -9,8 +10,7 @@ async function getTxns(
 	address: string,
 	limit: number = 50,
 	offset: number = 0,
-	collectedTxns: MayanTxn[] = [],
-): Promise<MayanTxn[]> {
+): Promise<MayanResponse> {
 	const resp = await axios.get<MayanResponse>(
 		'https://explorer-api.mayan.finance/v3/swaps',
 		{
@@ -21,12 +21,10 @@ async function getTxns(
 			},
 		},
 	);
-	collectedTxns.push(...resp.data.data);
-	if (resp.data.data.length < limit) return collectedTxns;
-	return await getTxns(address, limit, offset + limit, collectedTxns);
+	return resp.data!;
 }
 
-function parseResult(txns: MayanTxn[]): Partial<MayanWallet> {
+function processTxns(txns: MayanTxn[]): Partial<MayanWallet> {
 	const result = {
 		txns: txns.length,
 		days: [{ date: '', txns: 0 }],
@@ -91,8 +89,25 @@ function parseResult(txns: MayanTxn[]): Partial<MayanWallet> {
 }
 
 async function fetchWallet(address: string, concurrentFetches: number) {
-	const txns = await getTxns(address);
-	return parseResult(txns);
+	const dbService = new DatabaseService('mayan', 'results');
+	const storedTxns = await dbService.get<MayanTxn[]>(address);
+
+	const initReq = await getTxns(address, 50, 0);
+	if (storedTxns === undefined) await dbService.create(address, []);
+	else if (storedTxns.length === initReq.metadata.count)
+		return processTxns(storedTxns);
+
+	const txns = [...initReq.data, ...(storedTxns || [])];
+	const pages = Math.ceil((initReq.metadata.count - txns.length) / 50);
+	const requests = [];
+	for (let i = 50; i <= pages * 50; i += 50) {
+		requests.push(() => getTxns(address, 50, i));
+	}
+
+	const newTxns = await promiseAll(requests, concurrentFetches);
+	newTxns.forEach(resp => txns.push(...resp.data));
+	await dbService.update(address, txns);
+	return processTxns(txns);
 }
 
 export async function fetchWallets(

@@ -5,7 +5,7 @@ import type { Wallet } from '@/types/wallet';
 
 import type { LayerzeroResponse, LayerzeroTxn, LayerzeroWallet } from './types';
 
-function parseResult(txns: LayerzeroTxn[]): Partial<LayerzeroWallet> {
+function processTxns(txns: LayerzeroTxn[]): Partial<LayerzeroWallet> {
 	const result = {
 		days: [{ date: '', txns: 0 }],
 		weeks: [{ date: '', txns: 0 }],
@@ -72,7 +72,6 @@ function parseResult(txns: LayerzeroTxn[]): Partial<LayerzeroWallet> {
 	}
 
 	result.contracts = [...contractsSet].length;
-
 	result.srcChains = result.srcChains
 		.filter(item => item.id !== 0)
 		.sort((a, b) => b.txns - a.txns);
@@ -94,19 +93,16 @@ function parseResult(txns: LayerzeroTxn[]): Partial<LayerzeroWallet> {
 			(a, b) =>
 				new Date(a.date + '-01').getTime() - new Date(b.date + '-01').getTime(),
 		);
-	console.log(result);
 	return result;
 }
 
 async function fetchWallet(address: string, concurrentFetches: number) {
-	const resp = await axios.get<LayerzeroResponse>('/api/checker/layerzero', {
-		params: {
-			address,
-		},
-	});
+	const resp = await axios
+		.get<LayerzeroResponse>(`/api/layerzero/${address}`)
+		.then(res => res.data);
 	return {
-		txns: resp.data.result.data.count,
-		...parseResult(resp.data.result.data.messages),
+		txns: resp.result.data.count,
+		...processTxns(resp.result.data.messages),
 	};
 }
 

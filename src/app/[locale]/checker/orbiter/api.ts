@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-import { getWeekStart, promiseAll } from '@/lib/utils';
+import { DatabaseService } from '@/lib/db';
+import { getTokenPrice, getWeekStart, promiseAll } from '@/lib/utils';
 import type { Wallet } from '@/types/wallet';
 
 import type {
@@ -9,6 +10,53 @@ import type {
 	OrbiterTxnResponse,
 	OrbiterWallet,
 } from './types';
+
+type TokenPrice = {
+	id: string;
+	ticker: string;
+	price: number | null;
+};
+
+let prices: TokenPrice[] = [
+	{ id: 'bitcoin', price: null, ticker: 'BTC' },
+	{ id: 'ethereum', price: null, ticker: 'ETH' },
+	{ id: 'usd-coin', price: 1, ticker: 'USDC' },
+	{ id: 'tether', price: 1, ticker: 'USDT' },
+	{ id: 'book-of-meme', price: null, ticker: 'BOME' },
+	{ id: 'arbdoge-ai', price: null, ticker: 'AIDOGE' },
+];
+prices = await getTokenPrices(prices);
+
+async function getTokenPrices(tokens: TokenPrice[]) {
+	const dbService = new DatabaseService('orbiter', 'tokens');
+	const cached = await dbService.get<{
+		timestamp: number;
+		tokens: TokenPrice[];
+	}>('tokens');
+
+	if (cached === undefined)
+		await dbService.create('tokens', { timestamp: Date.now(), tokens: [] });
+	else if (Date.now() - cached.timestamp < 600 * 1000) return cached.tokens;
+
+	tokens = await Promise.all(
+		tokens.map(async token => {
+			if (token.price !== null && token.price !== 0) return token;
+			try {
+				const resp = await axios.get(
+					'https://api.coingecko.com/api/v3/simple/price',
+					{
+						params: { ids: token.id, vs_currencies: 'usd' },
+					},
+				);
+				token.price = parseFloat(resp.data?.[token.id]?.usd || '0');
+			} catch {}
+			return token;
+		}),
+	);
+
+	await dbService.update('tokens', { timestamp: Date.now(), tokens });
+	return tokens;
+}
 
 async function getPointsRank(address: string) {
 	const resp = await axios.get<OrbiterRankResponse>(
@@ -41,7 +89,7 @@ async function getTxns(
 	};
 }
 
-function parseResult(
+function processTxns(
 	txns: OrbiterTxn[],
 	tokensPrices: TokenPrice[],
 ): Partial<OrbiterWallet> {
@@ -57,7 +105,8 @@ function parseResult(
 
 	for (const txn of txns) {
 		const token = tokensPrices.find(token => token.ticker === txn.sourceSymbol);
-		if (token) result.volume += parseFloat(txn.sourceAmount) * token.price;
+		if (token)
+			result.volume += parseFloat(txn.sourceAmount) * (token.price || 0);
 
 		const srcChain = result.srcChains.find(
 			chain => chain.id === parseInt(txn.sourceChain),
@@ -108,29 +157,32 @@ function parseResult(
 	return result;
 }
 
-async function fetchWallet(
-	address: string,
-	concurrentFetches: number,
-	tokensPrices: TokenPrice[],
-) {
+async function fetchWallet(address: string, concurrentFetches: number) {
 	const pointsRank = await getPointsRank(address);
-	const initReq = await getTxns(address);
-	const txns = initReq.txns;
-	const txnsCount = initReq.count - txns.length;
-	if (txnsCount > 0) {
-		const pages = Math.ceil(txnsCount / 20); // 20 txns per page
-		const requests = [];
-		for (let i = 20; i <= pages * 20; i += 20) {
-			requests.push(() => getTxns(address, i));
-		}
+	const dbService = new DatabaseService('orbiter', 'results');
+	const storedTxns = await dbService.get<OrbiterTxn[]>(address);
 
-		const responses = await promiseAll(requests, concurrentFetches);
-		responses.forEach(resp => {
-			txns.push(...resp.txns);
-		});
+	const initReq = await getTxns(address);
+	if (storedTxns === undefined) await dbService.create(address, []);
+	else if (storedTxns.length === initReq.count)
+		return {
+			...processTxns(storedTxns, prices),
+			rank: pointsRank.rank,
+			points: pointsRank.points,
+		};
+
+	const txns = [...initReq.txns, ...(storedTxns || [])];
+	const pages = Math.ceil((initReq.count - txns.length) / 20);
+	const requests = [];
+	for (let i = 20; i <= pages * 20; i += 20) {
+		requests.push(() => getTxns(address, i));
 	}
+
+	const newTxns = await promiseAll(requests, concurrentFetches);
+	newTxns.forEach(resp => txns.push(...resp.txns));
+	await dbService.update(address, txns);
 	return {
-		...parseResult(txns, tokensPrices),
+		...processTxns(txns, prices),
 		rank: pointsRank.rank,
 		points: pointsRank.points,
 	};
@@ -143,16 +195,6 @@ export async function fetchWallets(
 	updateWallet: (address: string, wallet: Partial<Wallet>) => void,
 	setProgress?: (progress: number) => void,
 ) {
-	const tokensPrices: TokenPrice[] = [
-		{ id: 'bitcoin', price: 0, ticker: 'BTC' },
-		{ id: 'ethereum', price: 0, ticker: 'ETH' },
-		{ id: 'usd-coin', price: 1, ticker: 'USDC' },
-		{ id: 'tether', price: 1, ticker: 'USDT' },
-		{ id: 'book-of-meme', price: 0, ticker: 'BOME' },
-		{ id: 'arbdoge-ai', price: 0, ticker: 'AIDOGE' },
-	];
-	await updateTokenPrices(tokensPrices);
-
 	await promiseAll(
 		addresses.map(address => async () => {
 			try {
@@ -167,11 +209,7 @@ export async function fetchWallets(
 					srcChains: undefined,
 					dstChains: undefined,
 				});
-				const result = await fetchWallet(
-					address,
-					concurrentFetches,
-					tokensPrices,
-				);
+				const result = await fetchWallet(address, concurrentFetches);
 				updateWallet(address, result);
 			} catch (err) {
 				console.error(err);
@@ -192,28 +230,3 @@ export async function fetchWallets(
 		setProgress,
 	);
 }
-
-type TokenPrice = {
-	id: string;
-	ticker: string;
-	price: number;
-};
-
-const updateTokenPrices = async (tokens: TokenPrice[]) => {
-	const updates = await Promise.all(
-		tokens.map(async token =>
-			token.price === 0
-				? axios
-						.get('https://api.coingecko.com/api/v3/simple/price', {
-							params: { ids: token.id, vs_currencies: 'usd' },
-						})
-						.then(resp => ({
-							...token,
-							price: parseFloat(resp.data?.[token.id]?.usd || '0'),
-						}))
-						.catch(() => token)
-				: token,
-		),
-	);
-	Object.assign(tokens, updates);
-};

@@ -1,5 +1,6 @@
 import axios from 'axios';
 
+import { DatabaseService } from '@/lib/db';
 import { getTxns, type HeliusTxn } from '@/lib/solana';
 import { getWeekStart, promiseAll } from '@/lib/utils';
 import type { Wallet } from '@/types/wallet';
@@ -9,20 +10,45 @@ import type { MeteoraPair, MeteoraPosition, MeteoraWallet } from './types';
 const pairs = await getPairsAddresses();
 
 async function getPairsAddresses() {
+	const dbService = new DatabaseService('meteora', 'pairs');
+	const cached = await dbService.get<{
+		timestamp: number;
+		pairs: string[];
+	}>('pairs');
+
+	if (cached === undefined) {
+		await dbService.create('pairs', {
+			timestamp: Date.now(),
+			pairs: [],
+		});
+	} else {
+		if (cached.pairs.length > 0)
+			if (Date.now() - cached.timestamp < 600 * 1000) return cached.pairs;
+	}
+
 	const resp = await axios.get<MeteoraPair[]>(
 		'https://dlmm-api.meteora.ag/pair/all',
 	);
-	return resp.data!.map(pair => pair.address);
+	const result = resp.data!.map(pair => pair.address);
+	await dbService.update('pairs', {
+		timestamp: Date.now(),
+		pairs: result,
+	});
+	return result;
 }
 
 async function getPositon(
 	position: string,
 	endpoint: 'claim_fees' | 'deposits' | 'withdraws',
 ) {
-	const resp = await axios.get<MeteoraPosition[]>(
-		`https://dlmm-api.meteora.ag/position/${position}/${endpoint}`,
-	);
-	return resp.data!;
+	try {
+		const resp = await axios.get<MeteoraPosition[]>(
+			`https://dlmm-api.meteora.ag/position/${position}/${endpoint}`,
+		);
+		return resp.data!;
+	} catch (error) {
+		return [];
+	}
 }
 
 function getPositions(txns: HeliusTxn[], address: string) {
@@ -42,15 +68,18 @@ function getPositions(txns: HeliusTxn[], address: string) {
 	return Array.from(tokens);
 }
 
-function processTxns(txns: MeteoraPosition[]): Partial<MeteoraWallet> {
+function processTxns(
+	newTxns: MeteoraPosition[],
+	cachedResult?: MeteoraWallet | null,
+): Partial<MeteoraWallet> {
 	const result = {
-		txns: txns.length,
-		days: [{ date: '', txns: 0 }],
-		weeks: [{ date: '', txns: 0 }],
-		months: [{ date: '', txns: 0 }],
+		txns: newTxns.length + (cachedResult?.txns || 0),
+		days: cachedResult?.days || [{ date: '', txns: 0 }],
+		weeks: cachedResult?.weeks || [{ date: '', txns: 0 }],
+		months: cachedResult?.months || [{ date: '', txns: 0 }],
 	};
 
-	for (const txn of txns) {
+	for (const txn of newTxns) {
 		const date = new Date(txn.onchain_timestamp * 1000)
 			.toISOString()
 			.split('T')[0];
@@ -85,8 +114,16 @@ function processTxns(txns: MeteoraPosition[]): Partial<MeteoraWallet> {
 }
 
 async function fetchWallet(address: string, concurrentFetches: number) {
-	const solTxns = await getTxns(address, concurrentFetches);
-	const positions = getPositions(solTxns, address);
+	const dbService = new DatabaseService('meteora', 'results');
+	const cached = await dbService.get<{
+		lastHash: string;
+		result: MeteoraWallet | null;
+	}>(address);
+	if (cached === undefined)
+		await dbService.create(address, { lastHash: '', result: {} });
+
+	const txns = await getTxns(address, concurrentFetches, cached?.lastHash);
+	const positions = getPositions(txns, address);
 
 	const claimFeeTxns = (
 		await promiseAll(
@@ -113,13 +150,23 @@ async function fetchWallet(address: string, concurrentFetches: number) {
 		)
 	).flat();
 
-	return {
-		...processTxns([...depositsTxns, ...claimFeeTxns, ...withdrawsTxns]),
-		positions: positions.length,
-		fees: claimFeeTxns
-			.map(pos => pos.token_x_usd_amount + pos.token_y_usd_amount)
-			.reduce((a, b) => a + b, 0),
+	const result = {
+		...processTxns(
+			[...depositsTxns, ...claimFeeTxns, ...withdrawsTxns],
+			cached?.result,
+		),
+		positions: positions.length + (cached?.result?.positions || 0),
+		fees:
+			claimFeeTxns
+				.map(pos => pos.token_x_usd_amount + pos.token_y_usd_amount)
+				.reduce((a, b) => a + b, 0) + (cached?.result?.fees || 0),
 	};
+	await dbService.update(address, {
+		lastHash:
+			txns.at(0)?.transaction?.signatures?.at(0) || cached?.lastHash || '',
+		result,
+	});
+	return result;
 }
 
 export async function fetchWallets(

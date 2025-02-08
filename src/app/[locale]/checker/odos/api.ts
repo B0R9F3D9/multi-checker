@@ -1,5 +1,6 @@
 import axios from 'axios';
 
+import { DatabaseService } from '@/lib/db';
 import { getWeekStart, promiseAll } from '@/lib/utils';
 import type { Wallet } from '@/types/wallet';
 
@@ -17,7 +18,6 @@ async function getTxns(
 			},
 		},
 	);
-
 	return resp.data!;
 }
 
@@ -86,46 +86,24 @@ function processTxns(txns: OdosTxn[]): Partial<OdosWallet> {
 }
 
 async function fetchWallet(address: string, concurrentFetches: number) {
-	let txnsCount, txns, result;
-	try {
-		const init_request = await getTxns(address, 1);
-		txnsCount = init_request.totalCount - init_request.transactions.length;
-		txns = init_request.transactions;
-	} catch (err) {
-		txnsCount = null;
-		console.error(err);
-	}
-	try {
-		if (txnsCount && txnsCount > 0) {
-			const pages = Math.ceil(txnsCount / 10); // 10 txns per page
-			const requests = [];
-			for (let i = 2; i <= pages + 1; i++) {
-				requests.push(() => getTxns(address, i));
-			}
+	const dbService = new DatabaseService('odos', 'results');
+	const storedTxns = await dbService.get<OdosTxn[]>(address);
 
-			const responses = await promiseAll(requests, concurrentFetches);
-			responses.forEach(response => {
-				txns.push(...response.transactions);
-			});
-		}
-	} catch (err) {
-		txns = null;
-		console.error(err);
-	}
-	try {
-		if (txns) result = processTxns(txns);
-	} catch (err) {
-		result = {
-			txns: null,
-			volume: null,
-			fee: null,
-			days: null,
-			weeks: null,
-			months: null,
-		};
-		console.error(err);
-	}
-	return { ...result };
+	const initReq = await getTxns(address, 1);
+	if (storedTxns === undefined) await dbService.create(address, []);
+	else if (storedTxns.length === initReq.totalCount)
+		return processTxns(storedTxns);
+
+	const txns = [...initReq.transactions, ...(storedTxns || [])];
+	const pages = Math.ceil((initReq.totalCount - txns.length) / 10);
+	const requests = new Array(pages)
+		.fill(null)
+		.map((_, i) => async () => await getTxns(address, i + 2));
+
+	const newTxns = await promiseAll(requests, concurrentFetches);
+	newTxns.forEach(resp => txns.push(...resp.transactions));
+	await dbService.update(address, txns);
+	return processTxns(txns);
 }
 
 export async function fetchWallets(

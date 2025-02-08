@@ -9,7 +9,7 @@ import type {
 
 export async function GET(req: NextRequest) {
 	const address = req.url.split('?')[1].split('=')[1].split('&')[0];
-	const before = req.url.split('?')[1].split('=')[2];
+	const page = req.url.split('?')[1].split('=')[2];
 
 	try {
 		const resp = await axios.get<
@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
 		>('https://api.eclipsescan.xyz/v1/account/transaction', {
 			params: {
 				address,
-				before,
+				page,
 				page_size: 40,
 			},
 			headers: {

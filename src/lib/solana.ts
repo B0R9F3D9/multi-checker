@@ -1,5 +1,6 @@
 import axios from 'axios';
 
+import type { DatabaseService } from './db';
 import { generateUUID4, promiseAll } from './utils';
 
 type HeliusRpcResponse<T> = {
@@ -84,8 +85,8 @@ export type HeliusTxn = {
 				stackHeight: number;
 			}[];
 			recentBlockhash: string;
-			signatures: string[];
 		};
+		signatures: string[];
 	};
 	version: number | string;
 };
@@ -93,8 +94,8 @@ export type HeliusTxn = {
 async function getSignatures(
 	address: string,
 	before?: string,
-	txns: HeliusSignature[] = [],
-): Promise<HeliusSignature[]> {
+	// txns: HeliusSignature[] = [],
+): Promise<{ signatures: HeliusSignature[]; haveMore: boolean }> {
 	const resp = await axios.post<HeliusRpcResponse<HeliusSignature[]>>(
 		'https://grateful-jerrie-fast-mainnet.helius-rpc.com/',
 		{
@@ -104,10 +105,14 @@ async function getSignatures(
 			params: before ? [address, { before }] : [address, {}],
 		},
 	);
-	txns.push(...resp.data.result!);
-	if (resp.data.result.length === 1000)
-		return await getSignatures(address, resp.data.result[999].signature, txns);
-	return txns.filter(txn => txn.err === null);
+	return {
+		signatures: resp.data.result.filter(txn => txn.err === null),
+		haveMore: resp.data.result.length === 1000,
+	};
+	// txns.push(...resp.data.result!);
+	// if (resp.data.result.length === 1000)
+	// 	return await getSignatures(address, resp.data.result[999].signature, txns);
+	// return txns.filter(txn => txn.err === null);
 }
 
 async function fetchTxnsBatch(txnHashes: HeliusSignature[]) {
@@ -132,18 +137,26 @@ async function fetchTxnsBatch(txnHashes: HeliusSignature[]) {
 export async function getTxns(
 	address: string,
 	concurrentFetches: number,
+	lastCachedHash?: string,
 ): Promise<HeliusTxn[]> {
-	const signatures = await getSignatures(address);
-	const maxBatchSize = 250;
+	let { signatures, haveMore } = await getSignatures(address);
+	if (signatures.length === 0 || signatures[0].signature === lastCachedHash)
+		return [];
 
-	const batches = [];
-	for (let i = 0; i < signatures.length; i += maxBatchSize) {
-		batches.push(signatures.slice(i, i + maxBatchSize));
+	while (haveMore) {
+		const response = await getSignatures(
+			address,
+			signatures[signatures.length - 1].signature,
+		);
+		signatures = [...signatures, ...response.signatures];
+		haveMore = response.haveMore;
 	}
 
-	const tasks = batches.map(
-		batch => async () => await fetchTxnsBatch(batch),
-	);
+	const batches = [];
+	for (let i = 0; i < signatures.length; i += 250) {
+		batches.push(signatures.slice(i, i + 250));
+	}
 
+	const tasks = batches.map(batch => async () => await fetchTxnsBatch(batch));
 	return (await promiseAll(tasks, concurrentFetches)).flat();
 }

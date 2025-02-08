@@ -98,7 +98,7 @@ export default function CheckerPage() {
 				disabled={!showAddresses}
 				placeholder={t('addressesPlaceholder')}
 				onChange={e => setAddresses(e.target.value)}
-				className="w-full max-w-lg"
+				className="w-full max-w-lg text-lg"
 			/>
 			<div className="flex flex-row gap-2 w-full max-w-lg">
 				<Button

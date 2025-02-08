@@ -16,7 +16,6 @@ import type {
 
 async function getEthBalance(address: string): Promise<number> {
 	const resp = await axios.get<EclipseResponse<EclipseAccount>>(
-		// 'https://api.eclipsescan.xyz/v1/account',
 		'/api/checker/eclipse/account',
 		{
 			params: {
@@ -32,7 +31,6 @@ async function getEthBalance(address: string): Promise<number> {
 
 async function getDomain(address: string): Promise<string> {
 	const resp = await axios.get<EclipseResponse<EclipseDomain>>(
-		// 'https://api.eclipsescan.xyz/v1/account/domain',
 		'/api/checker/eclipse/domain',
 		{
 			params: {
@@ -49,16 +47,15 @@ async function getDomain(address: string): Promise<string> {
 
 async function getTxns(
 	address: string,
-	before?: string,
+	page: number = 1,
 	collectedTxns: EclipseTxn[] = [],
 ): Promise<EclipseTxn[]> {
 	const resp = await axios.get<EclipseResponse<{ transactions: EclipseTxn[] }>>(
-		// 'https://api.eclipsescan.xyz/v1/account/transaction',
 		'/api/checker/eclipse/transaction',
 		{
 			params: {
 				address,
-				before,
+				page,
 			},
 		},
 	);
@@ -70,7 +67,7 @@ async function getTxns(
 	collectedTxns.push(...txns);
 
 	if (txns.length === 40)
-		return await getTxns(address, txns[txns.length - 1].txHash, collectedTxns);
+		return await getTxns(address, page + 1, collectedTxns);
 
 	return collectedTxns;
 }

@@ -29,6 +29,7 @@
 		"concurrentWallets": "Number of concurrently checked wallets",
 		"page": "Page",
 		"of": "of",
+		"clearIDB": "Are you sure you want to clear the database?",
 		"goToPreviousPage": "Go to previous page",
 		"goToNextPage": "Go to next page",
 		"goToLastPage": "Go to last page",
