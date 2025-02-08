@@ -26,15 +26,19 @@ async function getPairsAddresses() {
 			if (Date.now() - cached.timestamp < 600 * 1000) return cached.pairs;
 	}
 
-	const resp = await axios.get<MeteoraPair[]>(
-		'https://dlmm-api.meteora.ag/pair/all',
-	);
-	const result = resp.data!.map(pair => pair.address);
-	await dbService.update('pairs', {
-		timestamp: Date.now(),
-		pairs: result,
-	});
-	return result;
+	try {
+		const resp = await axios.get<MeteoraPair[]>(
+			'https://dlmm-api.meteora.ag/pair/all',
+		);
+		const result = resp.data!.map(pair => pair.address);
+		await dbService.update('pairs', {
+			timestamp: Date.now(),
+			pairs: result,
+		});
+		return result;
+	} catch (error) {
+		return [];
+	}
 }
 
 async function getPositon(
