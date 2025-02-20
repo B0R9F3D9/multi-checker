@@ -5,14 +5,14 @@ import { LuCopy, LuEyeOff, LuRotateCcw, LuTrash } from 'react-icons/lu';
 import {
 	getCellComponent,
 	getDatesComponent,
+	getDebankButton,
 	getHeaderComponent,
-	getSolscanButton,
 } from '@/components/data-table/utils';
 import { Button } from '@/components/ui/button';
 import type { Toast } from '@/hooks/use-toast';
 import type { DateFrame } from '@/types/wallet';
 
-import type { PhoenixWallet } from './types';
+import type { MonadWallet } from './types';
 
 export function getColumns(
 	toast: (options: Toast) => {
@@ -24,7 +24,7 @@ export function getColumns(
 	recheckWallet: (address: string) => Promise<void>,
 	deleteWallet: (address: string) => void,
 	t: (t: string) => string,
-): ColumnDef<PhoenixWallet>[] {
+): ColumnDef<MonadWallet>[] {
 	return [
 		{
 			accessorKey: 'id',
@@ -74,22 +74,43 @@ export function getColumns(
 			cell: ({ row }) => getCellComponent('txns', row.getValue),
 		},
 		{
-			accessorKey: 'volume',
-			header: ({ column }) => getHeaderComponent('volume', column, t),
+			accessorKey: 'balance',
+			header: ({ column }) => getHeaderComponent('balance', column, t),
 			cell: ({ row }) =>
-				getCellComponent('volume', row.getValue, (value: number) =>
-					new Intl.NumberFormat('en-US', {
-						style: 'currency',
-						currency: 'USD',
-					}).format(value),
+				getCellComponent<number>(
+					'balance',
+					row.getValue,
+					value =>
+						value
+							.toLocaleString('en-US', {
+								style: 'currency',
+								currency: 'USD',
+							})
+							.split('$')[1] + ' MON',
 				),
 		},
 		{
-			accessorKey: 'pairs',
-			header: ({ column }) => getHeaderComponent('pairs', column, t),
-			cell: ({ row }) => getCellComponent('pairs', row.getValue),
+			accessorKey: 'contracts',
+			header: ({ column }) => getHeaderComponent('contracts', column, t),
+			cell: ({ row }) => getCellComponent('contracts', row.getValue),
 		},
-		...['days', 'weeks', 'months'].map<ColumnDef<PhoenixWallet>>(
+		{
+			accessorKey: 'fee',
+			header: ({ column }) => getHeaderComponent('fee', column, t),
+			cell: ({ row }) =>
+				getCellComponent<number>(
+					'fee',
+					row.getValue,
+					value =>
+						value
+							.toLocaleString('en-US', {
+								style: 'currency',
+								currency: 'USD',
+							})
+							.split('$')[1] + ' MON',
+				),
+		},
+		...['days', 'weeks', 'months'].map<ColumnDef<MonadWallet>>(
 			(dateFrame: string) => ({
 				accessorKey: dateFrame,
 				header: ({ column }) => getHeaderComponent(dateFrame, column, t),
@@ -104,7 +125,7 @@ export function getColumns(
 			header: () => <div className="text-center">{t('actions')}</div>,
 			cell: ({ row }) => (
 				<div className="flex justify-center items-center gap-1">
-					{getSolscanButton(row.getValue('address'))}
+					{getDebankButton(row.getValue('address'))}
 					<Button
 						className="cursor-pointer w-7 h-7"
 						variant="ghost"

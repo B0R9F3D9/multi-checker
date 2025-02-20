@@ -6,6 +6,7 @@ import type { JupiterWallet } from '@/app/[locale]/checker/_jupiter/types';
 import type { LayerzeroWallet } from '@/app/[locale]/checker/_layerzero/types';
 import type { MayanWallet } from '@/app/[locale]/checker/_mayan/types';
 import type { MeteoraWallet } from '@/app/[locale]/checker/_meteora/types';
+import type { MonadWallet } from '@/app/[locale]/checker/_monad/types';
 import type { OdosWallet } from '@/app/[locale]/checker/_odos/types';
 import type { OrbiterWallet } from '@/app/[locale]/checker/_orbiter/types';
 import type { PhoenixWallet } from '@/app/[locale]/checker/_phoenix/types';
@@ -21,6 +22,7 @@ export type Wallet =
 	| OrbiterWallet
 	| PhoenixWallet
 	| MeteoraWallet
-	| JupiterWallet;
+	| JupiterWallet
+	| MonadWallet;
 
 export type DateFrame = { date: string; txns: number }[];

@@ -117,6 +117,6 @@ export const PROJECTS: Project[] = [
 		discord: 'https://discord.com/invite/monad',
 		category: 'chain',
 		chain: 'evm',
-		isDisabled: true,
+		supportsDB: true,
 	},
 ];

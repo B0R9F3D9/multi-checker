@@ -83,7 +83,8 @@ function processTxns(txns: OdosTxn[]): Partial<OdosWallet> {
 
 async function fetchWallet(address: string, concurrentFetches: number) {
 	const dbService = new DatabaseService('odos', 'results');
-	const storedTxns = await dbService.get<OdosTxn[]>(address);
+	const cached = await dbService.get<{txns: OdosTxn[]}>(address);
+	const storedTxns = cached?.txns;
 
 	const initReq = await getTxns(address, 1);
 	if (storedTxns === undefined) await dbService.create(address, []);

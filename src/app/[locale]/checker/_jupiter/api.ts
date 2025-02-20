@@ -101,7 +101,7 @@ async function getMultipleTokenPrices(tokenAddresses: string[]) {
 
 async function processTxns(
 	newTxns: HeliusTxn[],
-	cachedResult?: JupiterWallet | null,
+	cached?: JupiterWallet | null,
 ): Promise<Partial<JupiterWallet>> {
 	newTxns = newTxns.filter(
 		txn =>
@@ -110,13 +110,13 @@ async function processTxns(
 	);
 
 	const result = {
-		txns: cachedResult?.txns || 0,
-		srcVolume: cachedResult?.srcVolume || 0,
-		dstVolume: cachedResult?.dstVolume || 0,
-		tokens: cachedResult?.tokens || 0,
-		days: cachedResult?.days || [{ date: '', txns: 0 }],
-		weeks: cachedResult?.weeks || [{ date: '', txns: 0 }],
-		months: cachedResult?.months || [{ date: '', txns: 0 }],
+		txns: cached?.txns || 0,
+		srcVolume: cached?.srcVolume || 0,
+		dstVolume: cached?.dstVolume || 0,
+		tokens: cached?.tokens || 0,
+		days: cached?.days || [{ date: '', txns: 0 }],
+		weeks: cached?.weeks || [{ date: '', txns: 0 }],
+		months: cached?.months || [{ date: '', txns: 0 }],
 	};
 
 	const tokensSet = new Set<string>();

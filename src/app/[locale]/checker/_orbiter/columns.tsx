@@ -109,7 +109,7 @@ export function getColumns(
 				accessorKey: dateFrame,
 				header: ({ column }) => getHeaderComponent(dateFrame, column, t),
 				cell: ({ row }) =>
-					getCellComponent(dateFrame, row.getValue, (data: DateFrame) =>
+					getCellComponent<DateFrame>(dateFrame, row.getValue, data =>
 						getDatesComponent(data, dateFrame as 'weeks' | 'days' | 'months'),
 					),
 			}),

@@ -86,7 +86,8 @@ function processTxns(txns: MayanTxn[]): Partial<MayanWallet> {
 
 async function fetchWallet(address: string, concurrentFetches: number) {
 	const dbService = new DatabaseService('mayan', 'results');
-	const storedTxns = await dbService.get<MayanTxn[]>(address);
+	const cached = await dbService.get<{ txns: MayanTxn[] }>(address);
+	const storedTxns = cached?.txns;
 
 	const initReq = await getTxns(address, 50, 0);
 	if (storedTxns === undefined) await dbService.create(address, []);

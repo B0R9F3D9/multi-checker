@@ -86,7 +86,7 @@ export function getColumns(
 				);
 			},
 			cell: ({ row }) =>
-				getCellComponent('domain', row.getValue, (domain: string) => {
+				getCellComponent<string>('domain', row.getValue, domain => {
 					if (!domain) return '-';
 					if (showAddresses) return domain;
 					const name = domain.replace('.turbo', '');
@@ -143,7 +143,7 @@ export function getColumns(
 				accessorKey: dateFrame,
 				header: ({ column }) => getHeaderComponent(dateFrame, column, t),
 				cell: ({ row }) =>
-					getCellComponent(dateFrame, row.getValue, (data: DateFrame) =>
+					getCellComponent<DateFrame>(dateFrame, row.getValue, data =>
 						getDatesComponent(data, dateFrame as 'weeks' | 'days' | 'months'),
 					),
 			}),
