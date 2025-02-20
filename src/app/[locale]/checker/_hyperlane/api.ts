@@ -1,6 +1,11 @@
 import axios from 'axios';
 
-import { base58Decode, getWeekStart, promiseAll } from '@/lib/utils';
+import {
+	base58Decode,
+	getWeekStart,
+	promiseAll,
+	sortByDate,
+} from '@/lib/utils';
 import type { Wallet } from '@/types/wallet';
 
 import type { HyperlaneResponse, HyperlaneTxn, HyperlaneWallet } from './types';
@@ -87,12 +92,8 @@ function parseResult(txns: HyperlaneTxn[]): Partial<HyperlaneWallet> {
 	result.dstChains = result.dstChains
 		.filter(item => item.id !== 0)
 		.sort((a, b) => b.txns - a.txns);
-	result.days = result.days
-		.filter(item => item.date !== '')
-		.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-	result.weeks = result.weeks
-		.filter(item => item.date !== '')
-		.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+	result.days = result.days.filter(item => item.date !== '').sort(sortByDate);
+	result.weeks = result.weeks.filter(item => item.date !== '').sort(sortByDate);
 	result.months = result.months
 		.filter(item => item.date !== '')
 		.sort(
@@ -103,7 +104,7 @@ function parseResult(txns: HyperlaneTxn[]): Partial<HyperlaneWallet> {
 	return result;
 }
 
-async function fetchWallet(address: string, concurrentFetches: number) {
+async function fetchWallet(address: string, _concurrentFetches: number) {
 	const txns = await getTxns(address);
 	return parseResult(txns);
 }

@@ -11,4 +11,5 @@ export type Project = {
 	chain: ProjectChain | ProjectChain[];
 	hasDescription?: boolean;
 	isDisabled?: boolean;
+	supportsDB?: boolean;
 };

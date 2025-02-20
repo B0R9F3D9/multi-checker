@@ -15,30 +15,49 @@ export function splitAddresses(addresses: string): string[] {
 
 export function promiseAll<T>(
 	tasks: (() => Promise<T>)[],
-	limit: number,
+	taskLimit: number,
 	setProgress?: (progress: number) => void,
+	maxPerMinute?: number,
 ): Promise<T[]> {
+	if (tasks.length === 0) return Promise.resolve([]);
 	const results: T[] = [];
 	let runningTasks = 0;
 	let currentIndex = 0;
 	let completedTasks = 0;
+	let taskCountInMinute = 0;
+	let startTime = Date.now();
+
 	setProgress?.(0);
 
+	const waitForNextMinute = async () => {
+		const elapsedTime = Date.now() - startTime;
+		if (elapsedTime < 60000) {
+			await new Promise(resolve => setTimeout(resolve, 60000 - elapsedTime));
+		}
+		startTime = Date.now();
+		taskCountInMinute = 0;
+	};
+
 	return new Promise((resolve, reject) => {
-		const next = () => {
-			if (currentIndex === tasks.length && runningTasks === 0) {
+		const next = async () => {
+			if (completedTasks >= tasks.length) {
 				resolve(results);
 				return;
 			}
 
-			if (runningTasks >= limit || currentIndex >= tasks.length) {
+			if (runningTasks >= taskLimit || currentIndex >= tasks.length) {
 				return;
+			}
+
+			if (maxPerMinute && taskCountInMinute >= maxPerMinute) {
+				await waitForNextMinute();
 			}
 
 			const taskIndex = currentIndex++;
 			const task = tasks[taskIndex];
 
 			runningTasks++;
+			taskCountInMinute++;
 			task()
 				.then(result => (results[taskIndex] = result))
 				.catch(err => reject(err))
@@ -52,7 +71,7 @@ export function promiseAll<T>(
 			next();
 		};
 
-		for (let i = 0; i < limit; i++) {
+		for (let i = 0; i < Math.min(taskLimit, tasks.length); i++) {
 			next();
 		}
 	});
@@ -67,7 +86,7 @@ export async function getTokenPrice(ticker: string) {
 }
 
 export function getProject(name: string) {
-	return PROJECTS.find(project => project.name.toLowerCase() === name);
+	return PROJECTS.find(project => project.path.split('/')[2] === name);
 }
 
 export function generateUUID4(): string {
@@ -134,4 +153,8 @@ export function toChecksumAddress(address: string): string {
 		else checksumAddress += char;
 	}
 	return checksumAddress;
+}
+
+export function sortByDate(a: { date: string }, b: { date: string }) {
+	return new Date(a.date).getTime() - new Date(b.date).getTime();
 }

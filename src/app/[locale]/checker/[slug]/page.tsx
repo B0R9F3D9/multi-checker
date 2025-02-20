@@ -3,8 +3,10 @@
 import { DialogDescription, DialogTitle } from '@radix-ui/react-dialog';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
+import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { FaRegTrashAlt } from 'react-icons/fa';
+import { FaDiscord, FaRegTrashAlt, FaSpinner } from 'react-icons/fa';
+import { FaXTwitter } from 'react-icons/fa6';
 import { PiWarningCircle } from 'react-icons/pi';
 
 import { DataTable } from '@/components/data-table/DataTable';
@@ -19,18 +21,19 @@ import {
 import { Progress } from '@/components/ui/progress';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
+import { useRouter } from '@/i18n/routing';
 import { getProject, splitAddresses, toChecksumAddress } from '@/lib/utils';
 import { useCheckerStore } from '@/stores/checkerStore';
 
-import { fetchWallets } from './api';
-import { getColumns } from './columns';
-
-const project = getProject('orbiter');
-
 export default function CheckerPage() {
+	const { slug } = useParams();
 	const t = useTranslations('CheckerPage');
 	const tProject = useTranslations('Projects');
 	const { toast } = useToast();
+	const router = useRouter();
+
+	const project = getProject(slug as string);
+
 	const {
 		wallets,
 		checkWallets,
@@ -44,6 +47,22 @@ export default function CheckerPage() {
 	const [showAddresses, setShowAddresses] = useState(true);
 	const [progress, setProgress] = useState(0);
 	const [showProgress, setShowProgress] = useState(false);
+	const [getColumns, setGetColumns] = useState<any>(null);
+	const [loadingError, setLoadingError] = useState<string | null>(null);
+
+	useEffect(() => {
+		setWallets([]);
+		(async () => {
+			try {
+				const api = await import(`@/app/[locale]/checker/_${slug}/api`);
+				const columns = await import(`@/app/[locale]/checker/_${slug}/columns`);
+				setFetchWallets(api.fetchWallets);
+				setGetColumns(() => columns.getColumns);
+			} catch {
+				setLoadingError(t('projectNotFound'));
+			}
+		})();
+	}, [slug]);
 
 	async function handleCheckWallets() {
 		setWallets(
@@ -55,19 +74,22 @@ export default function CheckerPage() {
 		await checkWallets(setShowProgress, setProgress);
 	}
 
-	async function clearIDB() {
-		if (window.confirm(t('clearIDB')))
-			window.indexedDB.deleteDatabase('orbiter');
-	}
-
-	useEffect(() => {
-		setWallets([]);
-		setFetchWallets(fetchWallets);
-	}, []);
-
 	useEffect(() => {
 		setAddresses(wallets.map(wallet => wallet.address).join('\n'));
 	}, [wallets]);
+
+	if (!project || loadingError || project.isDisabled)
+		return (
+			<div className="text-4xl text-center font-bold">
+				{t('projectNotFound')}
+			</div>
+		);
+	if (!getColumns)
+		return (
+			<div className="flex justify-center items-center">
+				<FaSpinner className="animate-spin text-4xl" />
+			</div>
+		);
 
 	return (
 		<div className="flex flex-col justify-center items-center gap-4 p-4">
@@ -78,7 +100,12 @@ export default function CheckerPage() {
 				width={100}
 				height={100}
 			/>
-			<div className="flex flex-row gap-2 justify-center items-center">
+			<div className="flex flex-row gap-3 justify-center items-center">
+				<Button variant="outline" size="icon">
+					<a href={project.discord} target="_blank">
+						<FaDiscord />
+					</a>
+				</Button>
 				<h1 className="text-2xl font-bold">{project!.name}</h1>
 				{project!.hasDescription ? (
 					<Dialog>
@@ -97,6 +124,11 @@ export default function CheckerPage() {
 						</DialogContent>
 					</Dialog>
 				) : null}
+				<Button variant="outline" size="icon">
+					<a href={project.twitter} target="_blank">
+						<FaXTwitter />
+					</a>
+				</Button>
 			</div>
 			<Textarea
 				rows={5}
@@ -107,9 +139,19 @@ export default function CheckerPage() {
 				className="w-full max-w-lg text-lg"
 			/>
 			<div className="flex flex-row gap-2 w-full max-w-lg">
-				<Button onClick={clearIDB} size="icon" variant="outline">
-					<FaRegTrashAlt />
-				</Button>
+				{project.supportsDB ? (
+					<Button
+						onClick={() =>
+							window.confirm(t('clearDB')) &&
+							window.indexedDB.deleteDatabase(project.name.toLowerCase()) &&
+							router.refresh()
+						}
+						size="icon"
+						variant="outline"
+					>
+						<FaRegTrashAlt />
+					</Button>
+				) : null}
 				<Button
 					onClick={handleCheckWallets}
 					disabled={addresses.trim().length === 0}

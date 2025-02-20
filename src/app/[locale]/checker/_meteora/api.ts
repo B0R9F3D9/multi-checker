@@ -2,7 +2,7 @@ import axios from 'axios';
 
 import { DatabaseService } from '@/lib/db';
 import { getTxns, type HeliusTxn } from '@/lib/solana';
-import { getWeekStart, promiseAll } from '@/lib/utils';
+import { getWeekStart, promiseAll, sortByDate } from '@/lib/utils';
 import type { Wallet } from '@/types/wallet';
 
 import type { MeteoraPair, MeteoraPosition, MeteoraWallet } from './types';
@@ -36,7 +36,7 @@ async function getPairsAddresses() {
 			pairs: result,
 		});
 		return result;
-	} catch (error) {
+	} catch {
 		return [];
 	}
 }
@@ -50,7 +50,7 @@ async function getPositon(
 			`https://dlmm-api.meteora.ag/position/${position}/${endpoint}`,
 		);
 		return resp.data!;
-	} catch (error) {
+	} catch {
 		return [];
 	}
 }
@@ -77,13 +77,17 @@ function processTxns(
 	cachedResult?: MeteoraWallet | null,
 ): Partial<MeteoraWallet> {
 	const result = {
-		txns: newTxns.length + (cachedResult?.txns || 0),
+		positions: cachedResult?.positions || 0,
+		fees: cachedResult?.fees || 0,
 		days: cachedResult?.days || [{ date: '', txns: 0 }],
 		weeks: cachedResult?.weeks || [{ date: '', txns: 0 }],
 		months: cachedResult?.months || [{ date: '', txns: 0 }],
 	};
 
 	for (const txn of newTxns) {
+		result.positions += 1;
+		result.fees += txn.token_x_usd_amount + txn.token_y_usd_amount;
+
 		const date = new Date(txn.onchain_timestamp * 1000)
 			.toISOString()
 			.split('T')[0];
@@ -101,12 +105,8 @@ function processTxns(
 		else result.months.push({ date: date.slice(0, 7), txns: 1 });
 	}
 
-	result.days = result.days
-		.filter(item => item.date !== '')
-		.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-	result.weeks = result.weeks
-		.filter(item => item.date !== '')
-		.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+	result.days = result.days.filter(item => item.date !== '').sort(sortByDate);
+	result.weeks = result.weeks.filter(item => item.date !== '').sort(sortByDate);
 	result.months = result.months
 		.filter(item => item.date !== '')
 		.sort(
@@ -126,48 +126,24 @@ async function fetchWallet(address: string, concurrentFetches: number) {
 	if (cached === undefined)
 		await dbService.create(address, { lastHash: '', result: {} });
 
-	const txns = await getTxns(address, concurrentFetches, cached?.lastHash);
-	const positions = getPositions(txns, address);
+	const solTxns = await getTxns(address, concurrentFetches, cached?.lastHash);
+	const positions = getPositions(solTxns, address);
 
-	const claimFeeTxns = (
+	const txns = (
 		await promiseAll(
 			positions.map(
 				position => async () => await getPositon(position, 'claim_fees'),
 			),
 			concurrentFetches,
-		)
-	).flat();
-	const depositsTxns = (
-		await promiseAll(
-			positions.map(
-				position => async () => await getPositon(position, 'deposits'),
-			),
-			concurrentFetches,
-		)
-	).flat();
-	const withdrawsTxns = (
-		await promiseAll(
-			positions.map(
-				position => async () => await getPositon(position, 'withdraws'),
-			),
-			concurrentFetches,
+			undefined,
+			45,
 		)
 	).flat();
 
-	const result = {
-		...processTxns(
-			[...depositsTxns, ...claimFeeTxns, ...withdrawsTxns],
-			cached?.result,
-		),
-		positions: positions.length + (cached?.result?.positions || 0),
-		fees:
-			claimFeeTxns
-				.map(pos => pos.token_x_usd_amount + pos.token_y_usd_amount)
-				.reduce((a, b) => a + b, 0) + (cached?.result?.fees || 0),
-	};
+	const result = processTxns(txns, cached?.result);
 	await dbService.update(address, {
 		lastHash:
-			txns.at(0)?.transaction?.signatures?.at(0) || cached?.lastHash || '',
+			solTxns.at(0)?.transaction?.signatures?.at(0) || cached?.lastHash || '',
 		result,
 	});
 	return result;
@@ -184,7 +160,6 @@ export async function fetchWallets(
 		addresses.map(address => async () => {
 			try {
 				updateWallet(address, {
-					txns: undefined,
 					fees: undefined,
 					positions: undefined,
 					days: undefined,
@@ -196,7 +171,6 @@ export async function fetchWallets(
 			} catch (err) {
 				console.error(err);
 				updateWallet(address, {
-					txns: null,
 					fees: null,
 					positions: null,
 					days: null,

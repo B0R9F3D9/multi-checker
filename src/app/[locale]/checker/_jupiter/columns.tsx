@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import type { Toast } from '@/hooks/use-toast';
 import type { DateFrame } from '@/types/wallet';
 
-import type { MeteoraWallet } from './types';
+import type { JupiterWallet } from './types';
 
 export function getColumns(
 	toast: (options: Toast) => {
@@ -24,7 +24,7 @@ export function getColumns(
 	recheckWallet: (address: string) => Promise<void>,
 	deleteWallet: (address: string) => void,
 	t: (t: string) => string,
-): ColumnDef<MeteoraWallet>[] {
+): ColumnDef<JupiterWallet>[] {
 	return [
 		{
 			accessorKey: 'id',
@@ -74,22 +74,33 @@ export function getColumns(
 			cell: ({ row }) => getCellComponent('txns', row.getValue),
 		},
 		{
-			accessorKey: 'positions',
-			header: ({ column }) => getHeaderComponent('positions', column, t),
-			cell: ({ row }) => getCellComponent('positions', row.getValue),
-		},
-		{
-			accessorKey: 'fees',
-			header: ({ column }) => getHeaderComponent('fees', column, t),
+			accessorKey: 'srcVolume',
+			header: ({ column }) => getHeaderComponent('srcVolume', column, t),
 			cell: ({ row }) =>
-				getCellComponent('fees', row.getValue, (value: number) =>
+				getCellComponent('srcVolume', row.getValue, (value: number) =>
 					new Intl.NumberFormat('en-US', {
 						style: 'currency',
 						currency: 'USD',
 					}).format(value),
 				),
 		},
-		...['days', 'weeks', 'months'].map<ColumnDef<MeteoraWallet>>(
+		{
+			accessorKey: 'dstVolume',
+			header: ({ column }) => getHeaderComponent('dstVolume', column, t),
+			cell: ({ row }) =>
+				getCellComponent('dstVolume', row.getValue, (value: number) =>
+					new Intl.NumberFormat('en-US', {
+						style: 'currency',
+						currency: 'USD',
+					}).format(value),
+				),
+		},
+		{
+			accessorKey: 'tokens',
+			header: ({ column }) => getHeaderComponent('tokens', column, t),
+			cell: ({ row }) => getCellComponent('tokens', row.getValue),
+		},
+		...['days', 'weeks', 'months'].map<ColumnDef<JupiterWallet>>(
 			(dateFrame: string) => ({
 				accessorKey: dateFrame,
 				header: ({ column }) => getHeaderComponent(dateFrame, column, t),

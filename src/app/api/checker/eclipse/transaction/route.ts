@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import axios, { type AxiosError } from 'axios';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
@@ -5,7 +6,7 @@ import { NextResponse } from 'next/server';
 import type {
 	EclipseResponse,
 	EclipseTxn,
-} from '@/app/[locale]/checker/eclipse/types';
+} from '@/app/[locale]/checker/_eclipse/types';
 
 export async function GET(req: NextRequest) {
 	const address = req.url.split('?')[1].split('=')[1].split('&')[0];

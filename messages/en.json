@@ -29,7 +29,7 @@
 		"concurrentWallets": "Number of concurrently checked wallets",
 		"page": "Page",
 		"of": "of",
-		"clearIDB": "Are you sure you want to clear the database?",
+		"clearDB": "Are you sure you want to clear the database?",
 		"goToPreviousPage": "Go to previous page",
 		"goToNextPage": "Go to next page",
 		"goToLastPage": "Go to last page",
@@ -59,7 +59,10 @@
 		"rank": "Rank",
 		"fees": "Fees",
 		"positions": "Positions",
-		"pairs": "Pairs"
+		"pairs": "Pairs",
+		"projectNotFound": "Project not found",
+		"srcVolume": "Source volume",
+		"dstVolume": "Destination volume"
 	},
 	"Projects": {
 		"LayerZero": {
@@ -70,6 +73,9 @@
 		},
 		"Odos": {
 			"description": "All transactions and data counted from the last snapshot date, 2024-12-16."
+		},
+		"Jupiter": {
+			"description": "Due to the lack of price data during the exchange, trading volume is reported as source volume (how much was spent) and destination volume (how much was received). The actual volume is somewhere in between. All data is from the latest snapshot, 2024-11-01."
 		}
 	},
 	"AboutPage": {

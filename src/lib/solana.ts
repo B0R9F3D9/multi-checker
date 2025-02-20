@@ -1,12 +1,15 @@
 import axios from 'axios';
 
-import type { DatabaseService } from './db';
 import { generateUUID4, promiseAll } from './utils';
 
 type HeliusRpcResponse<T> = {
 	id: string;
 	jsonrpc: string;
-	result: T;
+	result?: T | null;
+	error?: {
+		code: number;
+		message: string;
+	};
 };
 
 type HeliusSignature = {
@@ -24,14 +27,14 @@ type HeliusSignature = {
 };
 
 type HeliusTxnToken = {
-	acountIndex: number;
+	accountIndex: number;
 	mint: string;
 	owner: string;
 	programId: string;
 	uiTokenAmount: {
 		amount: string;
 		decimals: number;
-		uiAmount: string;
+		uiAmount: number;
 		uiAmountString: string;
 	};
 };
@@ -43,7 +46,7 @@ export type HeliusTxn = {
 		fee: number;
 		innerInstructions: {
 			index: number;
-			instuctions: {
+			instructions: {
 				parsed: {
 					info: any;
 					type: string;
@@ -94,7 +97,6 @@ export type HeliusTxn = {
 async function getSignatures(
 	address: string,
 	before?: string,
-	// txns: HeliusSignature[] = [],
 ): Promise<{ signatures: HeliusSignature[]; haveMore: boolean }> {
 	const resp = await axios.post<HeliusRpcResponse<HeliusSignature[]>>(
 		'https://grateful-jerrie-fast-mainnet.helius-rpc.com/',
@@ -105,14 +107,13 @@ async function getSignatures(
 			params: before ? [address, { before }] : [address, {}],
 		},
 	);
+
+	if (resp.data.error) throw new Error(resp.data.error.message);
+
 	return {
-		signatures: resp.data.result.filter(txn => txn.err === null),
-		haveMore: resp.data.result.length === 1000,
+		signatures: resp.data.result!.filter(txn => txn.err === null),
+		haveMore: resp.data.result!.length === 1000,
 	};
-	// txns.push(...resp.data.result!);
-	// if (resp.data.result.length === 1000)
-	// 	return await getSignatures(address, resp.data.result[999].signature, txns);
-	// return txns.filter(txn => txn.err === null);
 }
 
 async function fetchTxnsBatch(txnHashes: HeliusSignature[]) {
@@ -131,7 +132,12 @@ async function fetchTxnsBatch(txnHashes: HeliusSignature[]) {
 		requests,
 	);
 
-	return resp.data!.map(txn => txn.result);
+	if (resp.data.map(txn => txn.result).some(result => result === null)) {
+		throw new Error('One or more transactions have a null result', {
+			cause: resp,
+		});
+	}
+	return resp.data.map(txn => txn.result!);
 }
 
 export async function getTxns(

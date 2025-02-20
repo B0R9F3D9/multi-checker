@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { getWeekStart, promiseAll } from '@/lib/utils';
+import { getWeekStart, promiseAll, sortByDate } from '@/lib/utils';
 import type { Wallet } from '@/types/wallet';
 
 import type {
@@ -89,12 +89,8 @@ function processTxns(txns: JumperTxn[]): Partial<JumperWallet> {
 		else result.protocols.push({ name: txn.tool, txns: 1, id: '' });
 	}
 
-	result.days = result.days
-		.filter(item => item.date !== '')
-		.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-	result.weeks = result.weeks
-		.filter(item => item.date !== '')
-		.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+	result.days = result.days.filter(item => item.date !== '').sort(sortByDate);
+	result.weeks = result.weeks.filter(item => item.date !== '').sort(sortByDate);
 	result.months = result.months
 		.filter(item => item.date !== '')
 		.sort(
@@ -112,7 +108,7 @@ function processTxns(txns: JumperTxn[]): Partial<JumperWallet> {
 	return result;
 }
 
-async function fetchWallet(address: string, concurrentFetches: number) {
+async function fetchWallet(address: string, _concurrentFetches: number) {
 	let txns: JumperTxn[], rank, points;
 
 	try {

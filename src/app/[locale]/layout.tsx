@@ -1,4 +1,6 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Analytics } from '@vercel/analytics/react';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import type { Metadata } from 'next';
 import { NextIntlClientProvider } from 'next-intl';

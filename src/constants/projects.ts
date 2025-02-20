@@ -30,6 +30,7 @@ export const PROJECTS: Project[] = [
 		category: 'swap',
 		chain: 'evm',
 		hasDescription: true,
+		supportsDB: true,
 	},
 	{
 		name: 'Bebop',
@@ -48,6 +49,7 @@ export const PROJECTS: Project[] = [
 		discord: 'https://discord.com/invite/mayanfinance',
 		category: 'bridge',
 		chain: ['evm', 'svm'],
+		supportsDB: true,
 	},
 	{
 		name: 'Hyperlane',
@@ -75,6 +77,7 @@ export const PROJECTS: Project[] = [
 		discord: 'https://discord.com/invite/FbztTBvnBT',
 		category: 'bridge',
 		chain: ['evm', 'svm'],
+		supportsDB: true,
 	},
 	{
 		name: 'Phoenix Trade',
@@ -93,15 +96,27 @@ export const PROJECTS: Project[] = [
 		discord: 'https://discord.com/invite/meteora',
 		category: 'other',
 		chain: 'svm',
+		supportsDB: true,
 	},
 	{
 		name: 'Jupiter',
 		image: '/jupiter.webp',
-		path: '/checker/meteora',
+		path: '/checker/jupiter',
 		twitter: 'https://x.com/JupiterExchange',
 		discord: 'https://discord.com/invite/JUP',
 		category: 'swap',
 		chain: 'svm',
+		hasDescription: true,
+		supportsDB: true,
+	},
+	{
+		name: 'Monad',
+		image: '/monad.webp',
+		path: '/checker/monad',
+		twitter: 'https://x.com/monad_xyz',
+		discord: 'https://discord.com/invite/monad',
+		category: 'chain',
+		chain: 'evm',
 		isDisabled: true,
 	},
 ];

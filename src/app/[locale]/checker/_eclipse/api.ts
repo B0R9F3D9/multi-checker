@@ -1,6 +1,11 @@
 import axios from 'axios';
 
-import { getTokenPrice, getWeekStart, promiseAll } from '@/lib/utils';
+import {
+	getTokenPrice,
+	getWeekStart,
+	promiseAll,
+	sortByDate,
+} from '@/lib/utils';
 import { generateUUID4 } from '@/lib/utils';
 import type { Wallet } from '@/types/wallet';
 
@@ -167,12 +172,8 @@ function processTxns(
 		else result.months.push({ date: date.slice(0, 7), txns: 1 });
 	}
 
-	result.days = result.days
-		.filter(item => item.date !== '')
-		.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-	result.weeks = result.weeks
-		.filter(item => item.date !== '')
-		.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+	result.days = result.days.filter(item => item.date !== '').sort(sortByDate);
+	result.weeks = result.weeks.filter(item => item.date !== '').sort(sortByDate);
 	result.months = result.months
 		.filter(item => item.date !== '')
 		.sort(

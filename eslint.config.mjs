@@ -14,7 +14,10 @@ const eslintConfig = [
 	{
 		ignores: ['node_modules', 'out', '.next', 'public'],
 		rules: {
-			'@typescript-eslint/no-unused-vars': 'off',
+			'@typescript-eslint/no-unused-vars': [
+				'warn',
+				{ varsIgnorePattern: '^_', argsIgnorePattern: '^_' },
+			],
 			'@typescript-eslint/consistent-type-imports': 'error',
 			'@typescript-eslint/no-explicit-any': 'off',
 			'react-hooks/exhaustive-deps': 'off',

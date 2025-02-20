@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 import { DatabaseService } from '@/lib/db';
-import { getTokenPrice, getWeekStart, promiseAll } from '@/lib/utils';
+import { getWeekStart, promiseAll, sortByDate } from '@/lib/utils';
 import type { Wallet } from '@/types/wallet';
 
 import type {
@@ -141,12 +141,8 @@ function processTxns(
 	result.dstChains = result.dstChains
 		.filter(item => item.id !== 0)
 		.sort((a, b) => b.txns - a.txns);
-	result.days = result.days
-		.filter(item => item.date !== '')
-		.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-	result.weeks = result.weeks
-		.filter(item => item.date !== '')
-		.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+	result.days = result.days.filter(item => item.date !== '').sort(sortByDate);
+	result.weeks = result.weeks.filter(item => item.date !== '').sort(sortByDate);
 	result.months = result.months
 		.filter(item => item.date !== '')
 		.sort(

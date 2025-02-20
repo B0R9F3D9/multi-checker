@@ -3,7 +3,6 @@ import type { DateFrame } from '@/types/wallet';
 export type MeteoraWallet = {
 	id: number;
 	address: string;
-	txns?: number | null;
 	positions?: number | null;
 	fees?: number | null;
 	days?: DateFrame | null;

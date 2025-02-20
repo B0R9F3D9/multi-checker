@@ -1,6 +1,5 @@
 import { create } from 'zustand';
 
-import { toChecksumAddress } from '@/lib/utils';
 import type { Wallet } from '@/types/wallet';
 
 interface CheckerState {

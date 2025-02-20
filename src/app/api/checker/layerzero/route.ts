@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import axios, { AxiosError } from 'axios';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';

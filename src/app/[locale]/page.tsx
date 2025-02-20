@@ -41,10 +41,10 @@ export default function HomePage() {
 						<CardTitle className="relative flex flex-row justify-center items-center gap-2 mb-2">
 							<Link href={project.isDisabled ? '#' : project.path}>
 								<h1 className="text-xl font-semibold hover:text-sky-300">
-									{project!.name}
+									{project.name}
 								</h1>
 							</Link>
-							{project!.hasDescription ? (
+							{project.hasDescription ? (
 								<Dialog>
 									<DialogTrigger>
 										<PiWarningCircle size={22} />
@@ -52,11 +52,11 @@ export default function HomePage() {
 									<DialogContent>
 										<DialogHeader>
 											<DialogTitle className="text-2xl text-center font-semibold">
-												{project!.name}
+												{project.name}
 											</DialogTitle>
 										</DialogHeader>
 										<DialogDescription>
-											{tProject(`${project!.name}.description`)}
+											{tProject(`${project.name}.description`)}
 										</DialogDescription>
 									</DialogContent>
 								</Dialog>
