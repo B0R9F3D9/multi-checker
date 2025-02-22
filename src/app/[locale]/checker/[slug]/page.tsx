@@ -48,7 +48,7 @@ export default function CheckerPage() {
 	const [progress, setProgress] = useState(0);
 	const [showProgress, setShowProgress] = useState(false);
 	const [getColumns, setGetColumns] = useState<any>(null);
-	const [loadingError, setLoadingError] = useState<string | null>(null);
+	const [loadingError, setLoadingError] = useState<boolean>(false);
 
 	useEffect(() => {
 		setWallets([]);
@@ -59,7 +59,7 @@ export default function CheckerPage() {
 				setFetchWallets(api.fetchWallets);
 				setGetColumns(() => columns.getColumns);
 			} catch {
-				setLoadingError(t('projectNotFound'));
+				setLoadingError(true);
 			}
 		})();
 	}, [slug]);
