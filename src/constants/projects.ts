@@ -127,7 +127,6 @@ export const PROJECTS: Project[] = [
 		telegram: 'https://t.me/rangerfinancehq',
 		category: 'perp',
 		chain: 'svm',
-		hasDescription: true,
 	},
 	{
 		name: 'Jupiter Perps',

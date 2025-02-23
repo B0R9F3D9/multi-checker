@@ -78,22 +78,10 @@ export function getColumns(
 				),
 		},
 		{
-			accessorKey: 'leaderboardVolume',
-			header: ({ column }) =>
-				getHeaderComponent('leaderboardVolume', column, t),
+			accessorKey: 'volume',
+			header: ({ column }) => getHeaderComponent('volume', column, t),
 			cell: ({ row }) =>
-				getCellComponent('leaderboardVolume', row.getValue, (value: number) =>
-					value.toLocaleString('en-US', {
-						style: 'currency',
-						currency: 'USD',
-					}),
-				),
-		},
-		{
-			accessorKey: 'tradesVolume',
-			header: ({ column }) => getHeaderComponent('tradesVolume', column, t),
-			cell: ({ row }) =>
-				getCellComponent('tradesVolume', row.getValue, (value: number) =>
+				getCellComponent('volume', row.getValue, (value: number) =>
 					value.toLocaleString('en-US', {
 						style: 'currency',
 						currency: 'USD',

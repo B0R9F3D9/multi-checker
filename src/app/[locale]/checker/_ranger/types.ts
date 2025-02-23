@@ -5,8 +5,7 @@ export type RangerWallet = {
 	address: string;
 	trades?: number | null;
 	rank?: number | null;
-	leaderboardVolume?: number | null;
-	tradesVolume?: number | null;
+	volume?: number | null;
 	referals?: { address: string; volume: number }[] | null;
 	refVolume?: number | null;
 	pnl?: number | null;
