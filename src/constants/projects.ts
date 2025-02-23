@@ -119,4 +119,13 @@ export const PROJECTS: Project[] = [
 		chain: 'evm',
 		supportsDB: true,
 	},
+	{
+		name: 'Ranger Finance',
+		image: '/ranger.webp',
+		path: '/checker/ranger',
+		twitter: 'https://x.com/ranger_finance',
+		telegram: 'https://t.me/rangerfinancehq',
+		category: 'other',
+		chain: 'evm',
+	},
 ];

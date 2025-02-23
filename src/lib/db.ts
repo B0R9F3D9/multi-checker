@@ -24,11 +24,4 @@ export class DatabaseService extends Dexie {
 	): Promise<T | undefined> {
 		return (await this.table(this.tableName).get(key)) as T | undefined;
 	}
-
-	async update<T extends Record<string, any>>(
-		key: string,
-		data: T,
-	): Promise<void> {
-		await this.table(this.tableName).update(key, { ...data, id: key });
-	}
 }

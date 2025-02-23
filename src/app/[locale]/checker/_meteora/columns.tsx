@@ -2,11 +2,11 @@ import type { ColumnDef } from '@tanstack/react-table';
 import * as React from 'react';
 import { LuCopy, LuEyeOff, LuRotateCcw, LuTrash } from 'react-icons/lu';
 
+import { DatesComponent } from '@/components/data-table/Dates';
 import {
 	getCellComponent,
-	getDatesComponent,
 	getHeaderComponent,
-	getSolscanButton,
+	getSolScanButton,
 } from '@/components/data-table/utils';
 import { Button } from '@/components/ui/button';
 import type { Toast } from '@/hooks/use-toast';
@@ -78,10 +78,10 @@ export function getColumns(
 			header: ({ column }) => getHeaderComponent('fees', column, t),
 			cell: ({ row }) =>
 				getCellComponent('fees', row.getValue, (value: number) =>
-					new Intl.NumberFormat('en-US', {
+					value.toLocaleString('en-US', {
 						style: 'currency',
 						currency: 'USD',
-					}).format(value),
+					}),
 				),
 		},
 		...['days', 'weeks', 'months'].map<ColumnDef<MeteoraWallet>>(
@@ -90,7 +90,7 @@ export function getColumns(
 				header: ({ column }) => getHeaderComponent(dateFrame, column, t),
 				cell: ({ row }) =>
 					getCellComponent<DateFrame>(dateFrame, row.getValue, data =>
-						getDatesComponent(data, dateFrame as 'weeks' | 'days' | 'months'),
+						DatesComponent(data, dateFrame as 'weeks' | 'days' | 'months'),
 					),
 			}),
 		),
@@ -99,7 +99,7 @@ export function getColumns(
 			header: () => <div className="text-center">{t('actions')}</div>,
 			cell: ({ row }) => (
 				<div className="flex justify-center items-center gap-1">
-					{getSolscanButton(row.getValue('address'))}
+					{getSolScanButton(row.getValue('address'))}
 					<Button
 						className="cursor-pointer w-7 h-7"
 						variant="ghost"

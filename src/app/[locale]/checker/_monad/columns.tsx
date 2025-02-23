@@ -2,13 +2,15 @@ import type { ColumnDef } from '@tanstack/react-table';
 import * as React from 'react';
 import { LuCopy, LuEyeOff, LuRotateCcw, LuTrash } from 'react-icons/lu';
 
+import { DatesComponent } from '@/components/data-table/Dates';
 import {
+	getActionButton,
 	getCellComponent,
-	getDatesComponent,
 	getDebankButton,
 	getHeaderComponent,
 } from '@/components/data-table/utils';
 import { Button } from '@/components/ui/button';
+import { ACTION_LINKS } from '@/constants';
 import type { Toast } from '@/hooks/use-toast';
 import type { DateFrame } from '@/types/wallet';
 
@@ -116,7 +118,7 @@ export function getColumns(
 				header: ({ column }) => getHeaderComponent(dateFrame, column, t),
 				cell: ({ row }) =>
 					getCellComponent<DateFrame>(dateFrame, row.getValue, data =>
-						getDatesComponent(data, dateFrame as 'weeks' | 'days' | 'months'),
+						DatesComponent(data, dateFrame as 'weeks' | 'days' | 'months'),
 					),
 			}),
 		),
@@ -126,6 +128,11 @@ export function getColumns(
 			cell: ({ row }) => (
 				<div className="flex justify-center items-center gap-1">
 					{getDebankButton(row.getValue('address'))}
+					{getActionButton(
+						row.getValue('address'),
+						ACTION_LINKS.monadExplorer,
+						'/monad.webp',
+					)}
 					<Button
 						className="cursor-pointer w-7 h-7"
 						variant="ghost"

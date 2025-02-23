@@ -62,7 +62,9 @@
 		"pairs": "Pairs",
 		"projectNotFound": "Project not found",
 		"srcVolume": "Source volume",
-		"dstVolume": "Destination volume"
+		"dstVolume": "Destination volume",
+		"referals": "Referals",
+		"refVolume": "Referral volume"
 	},
 	"Projects": {
 		"LayerZero": {

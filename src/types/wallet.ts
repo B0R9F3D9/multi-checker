@@ -10,6 +10,7 @@ import type { MonadWallet } from '@/app/[locale]/checker/_monad/types';
 import type { OdosWallet } from '@/app/[locale]/checker/_odos/types';
 import type { OrbiterWallet } from '@/app/[locale]/checker/_orbiter/types';
 import type { PhoenixWallet } from '@/app/[locale]/checker/_phoenix/types';
+import type { RangerWallet } from '@/app/[locale]/checker/_ranger/types';
 
 export type Wallet =
 	| LayerzeroWallet
@@ -23,6 +24,7 @@ export type Wallet =
 	| PhoenixWallet
 	| MeteoraWallet
 	| JupiterWallet
-	| MonadWallet;
+	| MonadWallet
+	| RangerWallet;
 
 export type DateFrame = { date: string; txns: number }[];

@@ -83,7 +83,7 @@ function processTxns(txns: OdosTxn[]): Partial<OdosWallet> {
 
 async function fetchWallet(address: string, concurrentFetches: number) {
 	const dbService = new DatabaseService('odos', 'results');
-	const cached = await dbService.get<{txns: OdosTxn[]}>(address);
+	const cached = await dbService.get<{ txns: OdosTxn[] }>(address);
 	const storedTxns = cached?.txns;
 
 	const initReq = await getTxns(address, 1);
@@ -99,7 +99,7 @@ async function fetchWallet(address: string, concurrentFetches: number) {
 
 	const newTxns = await promiseAll(requests, concurrentFetches);
 	newTxns.forEach(resp => txns.push(...resp.transactions));
-	await dbService.update(address, txns);
+	await dbService.create(address, txns);
 	return processTxns(txns);
 }
 

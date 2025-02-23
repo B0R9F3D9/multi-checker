@@ -3,10 +3,10 @@ import * as React from 'react';
 import { LuCopy, LuEyeOff, LuRotateCcw, LuTrash } from 'react-icons/lu';
 
 import { ChainsComponent } from '@/components/data-table/Chains';
+import { DatesComponent } from '@/components/data-table/Dates';
 import {
 	getActionButton,
 	getCellComponent,
-	getDatesComponent,
 	getDebankButton,
 	getHeaderComponent,
 } from '@/components/data-table/utils';
@@ -107,7 +107,7 @@ export function getColumns(
 				header: ({ column }) => getHeaderComponent(dateFrame, column, t),
 				cell: ({ row }) =>
 					getCellComponent<DateFrame>(dateFrame, row.getValue, data =>
-						getDatesComponent(data, dateFrame as 'weeks' | 'days' | 'months'),
+						DatesComponent(data, dateFrame as 'weeks' | 'days' | 'months'),
 					),
 			}),
 		),
@@ -118,7 +118,7 @@ export function getColumns(
 				<div className="flex justify-center items-center gap-1">
 					{getActionButton(
 						row.getValue('address'),
-						ACTION_LINKS.layerzeroscan,
+						ACTION_LINKS.layerzeroScan,
 						'/layerzero.webp',
 					)}
 					{getDebankButton(row.getValue('address'))}

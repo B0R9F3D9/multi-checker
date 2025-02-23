@@ -103,7 +103,7 @@ async function fetchWallet(address: string, concurrentFetches: number) {
 
 	const newTxns = await promiseAll(requests, concurrentFetches);
 	newTxns.forEach(resp => txns.push(...resp.data));
-	await dbService.update(address, txns);
+	await dbService.create(address, txns);
 	return processTxns(txns);
 }
 

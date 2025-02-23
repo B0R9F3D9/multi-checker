@@ -2,12 +2,12 @@ import type { ColumnDef } from '@tanstack/react-table';
 import * as React from 'react';
 import { LuCopy, LuEyeOff, LuRotateCcw, LuTrash } from 'react-icons/lu';
 
+import { DatesComponent } from '@/components/data-table/Dates';
 import {
 	getActionButton,
 	getCellComponent,
-	getDatesComponent,
 	getHeaderComponent,
-	getSolscanButton,
+	getSolScanButton,
 } from '@/components/data-table/utils';
 import { Button } from '@/components/ui/button';
 import { ACTION_LINKS } from '@/constants';
@@ -110,10 +110,10 @@ export function getColumns(
 			header: ({ column }) => getHeaderComponent('balance', column, t),
 			cell: ({ row }) =>
 				getCellComponent('balance', row.getValue, (value: number) =>
-					new Intl.NumberFormat('en-US', {
+					value.toLocaleString('en-US', {
 						style: 'currency',
 						currency: 'USD',
-					}).format(value),
+					}),
 				),
 		},
 		{
@@ -121,10 +121,10 @@ export function getColumns(
 			header: ({ column }) => getHeaderComponent('volume', column, t),
 			cell: ({ row }) =>
 				getCellComponent('volume', row.getValue, (value: number) =>
-					new Intl.NumberFormat('en-US', {
+					value.toLocaleString('en-US', {
 						style: 'currency',
 						currency: 'USD',
-					}).format(value),
+					}),
 				),
 		},
 		{
@@ -132,10 +132,10 @@ export function getColumns(
 			header: ({ column }) => getHeaderComponent('fee', column, t),
 			cell: ({ row }) =>
 				getCellComponent('fee', row.getValue, (value: number) =>
-					new Intl.NumberFormat('en-US', {
+					value.toLocaleString('en-US', {
 						style: 'currency',
 						currency: 'USD',
-					}).format(value),
+					}),
 				),
 		},
 		...['days', 'weeks', 'months'].map<ColumnDef<EclipseWallet>>(
@@ -144,7 +144,7 @@ export function getColumns(
 				header: ({ column }) => getHeaderComponent(dateFrame, column, t),
 				cell: ({ row }) =>
 					getCellComponent<DateFrame>(dateFrame, row.getValue, data =>
-						getDatesComponent(data, dateFrame as 'weeks' | 'days' | 'months'),
+						DatesComponent(data, dateFrame as 'weeks' | 'days' | 'months'),
 					),
 			}),
 		),
@@ -155,10 +155,10 @@ export function getColumns(
 				<div className="flex justify-center items-center gap-1">
 					{getActionButton(
 						row.getValue('address'),
-						ACTION_LINKS.eclipsescan,
+						ACTION_LINKS.eclipseScan,
 						'/eclipse.webp',
 					)}
-					{getSolscanButton(row.getValue('address'))}
+					{getSolScanButton(row.getValue('address'))}
 					<Button
 						className="cursor-pointer w-7 h-7"
 						variant="ghost"

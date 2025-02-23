@@ -1,6 +1,6 @@
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
-import { FaDiscord } from 'react-icons/fa';
+import { FaDiscord, FaTelegram } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
 import { PiWarningCircle } from 'react-icons/pi';
 
@@ -65,8 +65,8 @@ export default function HomePage() {
 
 						<CardFooter className="flex justify-center gap-2">
 							<Button variant="outline" size="icon">
-								<a href={project.discord} target="_blank">
-									<FaDiscord />
+								<a href={project.discord || project.telegram} target="_blank">
+									{project.discord ? <FaDiscord /> : <FaTelegram />}
 								</a>
 							</Button>
 							<Button variant="outline" disabled={project.isDisabled}>

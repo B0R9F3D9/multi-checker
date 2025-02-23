@@ -2,18 +2,16 @@ import type { ColumnDef } from '@tanstack/react-table';
 import * as React from 'react';
 import { LuCopy, LuEyeOff, LuRotateCcw, LuTrash } from 'react-icons/lu';
 
-import { ChainsComponent } from '@/components/data-table/Chains';
-import { DatesComponent } from '@/components/data-table/Dates';
+import { ReferralsComponent } from '@/components/data-table/Referrals';
 import {
 	getCellComponent,
-	getDebankButton,
 	getHeaderComponent,
+	getSolScanButton,
 } from '@/components/data-table/utils';
 import { Button } from '@/components/ui/button';
 import type { Toast } from '@/hooks/use-toast';
-import type { DateFrame } from '@/types/wallet';
 
-import type { JumperWallet } from './types';
+import type { RangerWallet } from './types';
 
 export function getColumns(
 	toast: (options: Toast) => {
@@ -25,7 +23,7 @@ export function getColumns(
 	recheckWallet: (address: string) => Promise<void>,
 	deleteWallet: (address: string) => void,
 	t: (t: string) => string,
-): ColumnDef<JumperWallet>[] {
+): ColumnDef<RangerWallet>[] {
 	return [
 		{
 			accessorKey: 'id',
@@ -70,9 +68,12 @@ export function getColumns(
 			),
 		},
 		{
-			accessorKey: 'txns',
-			header: ({ column }) => getHeaderComponent('txns', column, t),
-			cell: ({ row }) => getCellComponent('txns', row.getValue),
+			accessorKey: 'rank',
+			header: ({ column }) => getHeaderComponent('rank', column, t),
+			cell: ({ row }) =>
+				getCellComponent('rank', row.getValue, (value: number) =>
+					value.toLocaleString(),
+				),
 		},
 		{
 			accessorKey: 'volume',
@@ -86,47 +87,28 @@ export function getColumns(
 				),
 		},
 		{
-			accessorKey: 'rank',
-			header: ({ column }) => getHeaderComponent('rank', column, t),
+			accessorKey: 'referals',
+			header: ({ column }) => getHeaderComponent('referals', column, t),
 			cell: ({ row }) =>
-				getCellComponent('rank', row.getValue, (value: number) =>
-					value.toLocaleString(),
-				),
+				getCellComponent('referals', row.getValue, ReferralsComponent),
 		},
 		{
-			accessorKey: 'points',
-			header: ({ column }) => getHeaderComponent('points', column, t),
-			cell: ({ row }) => getCellComponent('points', row.getValue),
+			accessorKey: 'refVolume',
+			header: ({ column }) => getHeaderComponent('refVolume', column, t),
+			cell: ({ row }) =>
+				getCellComponent('refVolume', row.getValue, (value: number) =>
+					value.toLocaleString('en-US', {
+						style: 'currency',
+						currency: 'USD',
+					}),
+				),
 		},
-		...['srcChains', 'dstChains'].map<ColumnDef<JumperWallet>>(
-			(chainsType: string) => ({
-				accessorKey: chainsType,
-				header: ({ column }) => getHeaderComponent(chainsType, column, t),
-				cell: ({ row }) =>
-					getCellComponent(
-						chainsType,
-						row.getValue,
-						(data: JumperWallet['srcChains']) =>
-							ChainsComponent(data!, 'jumperId'),
-					),
-			}),
-		),
-		...['days', 'weeks', 'months'].map<ColumnDef<JumperWallet>>(
-			(dateFrame: string) => ({
-				accessorKey: dateFrame,
-				header: ({ column }) => getHeaderComponent(dateFrame, column, t),
-				cell: ({ row }) =>
-					getCellComponent<DateFrame>(dateFrame, row.getValue, data =>
-						DatesComponent(data, dateFrame as 'weeks' | 'days' | 'months'),
-					),
-			}),
-		),
 		{
 			id: 'actions',
 			header: () => <div className="text-center">{t('actions')}</div>,
 			cell: ({ row }) => (
 				<div className="flex justify-center items-center gap-1">
-					{getDebankButton(row.getValue('address'))}
+					{getSolScanButton(row.getValue('address'))}
 					<Button
 						className="cursor-pointer w-7 h-7"
 						variant="ghost"

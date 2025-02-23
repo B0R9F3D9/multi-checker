@@ -54,7 +54,7 @@ async function getTokenPrices(tokens: TokenPrice[]) {
 		}),
 	);
 
-	await dbService.update('tokens', { timestamp: Date.now(), tokens });
+	await dbService.create('tokens', { timestamp: Date.now(), tokens });
 	return tokens;
 }
 
@@ -176,7 +176,7 @@ async function fetchWallet(address: string, concurrentFetches: number) {
 
 	const newTxns = await promiseAll(requests, concurrentFetches);
 	newTxns.forEach(resp => txns.push(...resp.txns));
-	await dbService.update(address, txns);
+	await dbService.create(address, txns);
 	return {
 		...processTxns(txns, prices),
 		rank: pointsRank.rank,

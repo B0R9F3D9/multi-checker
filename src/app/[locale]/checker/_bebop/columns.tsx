@@ -3,9 +3,9 @@ import * as React from 'react';
 import { LuCopy, LuEyeOff, LuRotateCcw, LuTrash } from 'react-icons/lu';
 
 import { ChainsComponent } from '@/components/data-table/Chains';
+import { DatesComponent } from '@/components/data-table/Dates';
 import {
 	getCellComponent,
-	getDatesComponent,
 	getDebankButton,
 	getHeaderComponent,
 } from '@/components/data-table/utils';
@@ -79,10 +79,10 @@ export function getColumns(
 			header: ({ column }) => getHeaderComponent('volume', column, t),
 			cell: ({ row }) =>
 				getCellComponent('volume', row.getValue, (value: number) =>
-					new Intl.NumberFormat('en-US', {
+					value.toLocaleString('en-US', {
 						style: 'currency',
 						currency: 'USD',
-					}).format(value),
+					}),
 				),
 		},
 		{
@@ -97,7 +97,7 @@ export function getColumns(
 				header: ({ column }) => getHeaderComponent(dateFrame, column, t),
 				cell: ({ row }) =>
 					getCellComponent<DateFrame>(dateFrame, row.getValue, data =>
-						getDatesComponent(data, dateFrame as 'weeks' | 'days' | 'months'),
+						DatesComponent(data, dateFrame as 'weeks' | 'days' | 'months'),
 					),
 			}),
 		),

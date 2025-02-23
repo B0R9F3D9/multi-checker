@@ -6,7 +6,8 @@ export type Project = {
 	path: string;
 	image: string;
 	twitter: string;
-	discord: string;
+	discord?: string;
+	telegram?: string;
 	category: ProjectCategory | ProjectCategory[];
 	chain: ProjectChain | ProjectChain[];
 	hasDescription?: boolean;

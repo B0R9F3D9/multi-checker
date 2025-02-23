@@ -31,7 +31,7 @@ async function getPairsAddresses() {
 			'https://dlmm-api.meteora.ag/pair/all',
 		);
 		const result = resp.data!.map(pair => pair.address);
-		await dbService.update('pairs', {
+		await dbService.create('pairs', {
 			timestamp: Date.now(),
 			pairs: result,
 		});
@@ -141,7 +141,7 @@ async function fetchWallet(address: string, concurrentFetches: number) {
 	).flat();
 
 	const result = processTxns(txns, cached?.result);
-	await dbService.update(address, {
+	await dbService.create(address, {
 		lastHash:
 			solTxns.at(0)?.transaction?.signatures?.at(0) || cached?.lastHash || '',
 		result,

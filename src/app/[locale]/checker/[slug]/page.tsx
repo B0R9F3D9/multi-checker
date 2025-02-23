@@ -5,7 +5,12 @@ import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { FaDiscord, FaRegTrashAlt, FaSpinner } from 'react-icons/fa';
+import {
+	FaDiscord,
+	FaRegTrashAlt,
+	FaSpinner,
+	FaTelegram,
+} from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
 import { PiWarningCircle } from 'react-icons/pi';
 
@@ -102,8 +107,8 @@ export default function CheckerPage() {
 			/>
 			<div className="flex flex-row gap-3 justify-center items-center">
 				<Button variant="outline" size="icon">
-					<a href={project.discord} target="_blank">
-						<FaDiscord />
+					<a href={project.discord || project.telegram} target="_blank">
+						{project.discord ? <FaDiscord /> : <FaTelegram />}
 					</a>
 				</Button>
 				<h1 className="text-2xl font-bold">{project!.name}</h1>
