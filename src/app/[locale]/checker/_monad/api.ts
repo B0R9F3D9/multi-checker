@@ -69,7 +69,9 @@ async function getTxns(
 	}
 }
 
-function processTxns(txns: MonadTxn[]): Partial<MonadWallet> {
+function processTxns(txns: MonadTxn[], address: string): Partial<MonadWallet> {
+	txns.filter(txn => txn.from === address.toLowerCase());
+
 	const result = {
 		txns: txns.length,
 		contracts: 0,
@@ -123,7 +125,7 @@ async function fetchWallet(address: string, _concurrentFetches: number) {
 	const newTxns = await getTxns(address, stopHash);
 	if (storedTxns && newTxns.length === 0)
 		return {
-			...processTxns(storedTxns!),
+			...processTxns(storedTxns!, address),
 			balance: cached?.balance,
 		};
 
@@ -131,7 +133,7 @@ async function fetchWallet(address: string, _concurrentFetches: number) {
 	const balance = await getMonBalance(address);
 	await dbService.create(address, { txns: allTxns, balance });
 
-	return { ...processTxns(allTxns), balance };
+	return { ...processTxns(allTxns, address), balance };
 }
 
 export async function fetchWallets(
