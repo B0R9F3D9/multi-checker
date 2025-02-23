@@ -106,11 +106,11 @@ export default function CheckerPage() {
 				height={100}
 			/>
 			<div className="flex flex-row gap-3 justify-center items-center">
-				<Button variant="outline" size="icon">
-					<a href={project.discord || project.telegram} target="_blank">
+				<a href={project.discord || project.telegram} target="_blank">
+					<Button variant="outline" size="icon">
 						{project.discord ? <FaDiscord /> : <FaTelegram />}
-					</a>
-				</Button>
+					</Button>
+				</a>
 				<h1 className="text-2xl font-bold">{project!.name}</h1>
 				{project!.hasDescription ? (
 					<Dialog>
@@ -129,11 +129,11 @@ export default function CheckerPage() {
 						</DialogContent>
 					</Dialog>
 				) : null}
-				<Button variant="outline" size="icon">
-					<a href={project.twitter} target="_blank">
+				<a href={project.twitter} target="_blank">
+					<Button variant="outline" size="icon">
 						<FaXTwitter />
-					</a>
-				</Button>
+					</Button>
+				</a>
 			</div>
 			<Textarea
 				rows={5}

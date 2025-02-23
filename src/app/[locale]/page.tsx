@@ -64,21 +64,25 @@ export default function HomePage() {
 						</CardTitle>
 
 						<CardFooter className="flex justify-center gap-2">
-							<Button variant="outline" size="icon">
-								<a href={project.discord || project.telegram} target="_blank">
+							<a href={project.discord || project.telegram} target="_blank">
+								<Button variant="outline" size="icon">
 									{project.discord ? <FaDiscord /> : <FaTelegram />}
-								</a>
-							</Button>
-							<Button variant="outline" disabled={project.isDisabled}>
-								<Link href={project.isDisabled ? '#' : project.path}>
-									{project.isDisabled ? t('comingSoon') : t('goToChecker')}
+								</Button>
+							</a>
+							{project.isDisabled ? (
+								<Button variant="outline" disabled>
+									{t('comingSoon')}
+								</Button>
+							) : (
+								<Link href={project.path}>
+									<Button variant="outline">{t('goToChecker')}</Button>
 								</Link>
-							</Button>
-							<Button variant="outline" size="icon">
-								<a href={project.twitter} target="_blank">
+							)}
+							<a href={project.twitter} target="_blank">
+								<Button variant="outline" size="icon">
 									<FaXTwitter />
-								</a>
-							</Button>
+								</Button>
+							</a>
 						</CardFooter>
 					</Card>
 				</div>
