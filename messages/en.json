@@ -64,7 +64,9 @@
 		"srcVolume": "Source volume",
 		"dstVolume": "Destination volume",
 		"referals": "Referals",
-		"refVolume": "Referral volume"
+		"refVolume": "Referral volume",
+		"trades": "Trades",
+		"pnl": "PnL"
 	},
 	"Projects": {
 		"LayerZero": {

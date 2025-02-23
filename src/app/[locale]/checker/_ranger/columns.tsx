@@ -2,6 +2,7 @@ import type { ColumnDef } from '@tanstack/react-table';
 import * as React from 'react';
 import { LuCopy, LuEyeOff, LuRotateCcw, LuTrash } from 'react-icons/lu';
 
+import { DatesComponent } from '@/components/data-table/Dates';
 import { ReferralsComponent } from '@/components/data-table/Referrals';
 import {
 	getCellComponent,
@@ -10,6 +11,7 @@ import {
 } from '@/components/data-table/utils';
 import { Button } from '@/components/ui/button';
 import type { Toast } from '@/hooks/use-toast';
+import type { DateFrame } from '@/types/wallet';
 
 import type { RangerWallet } from './types';
 
@@ -68,10 +70,10 @@ export function getColumns(
 			),
 		},
 		{
-			accessorKey: 'rank',
-			header: ({ column }) => getHeaderComponent('rank', column, t),
+			accessorKey: 'trades',
+			header: ({ column }) => getHeaderComponent('trades', column, t),
 			cell: ({ row }) =>
-				getCellComponent('rank', row.getValue, (value: number) =>
+				getCellComponent('trades', row.getValue, (value: number) =>
 					value.toLocaleString(),
 				),
 		},
@@ -80,6 +82,36 @@ export function getColumns(
 			header: ({ column }) => getHeaderComponent('volume', column, t),
 			cell: ({ row }) =>
 				getCellComponent('volume', row.getValue, (value: number) =>
+					value.toLocaleString('en-US', {
+						style: 'currency',
+						currency: 'USD',
+					}),
+				),
+		},
+		{
+			accessorKey: 'pnl',
+			header: ({ column }) => getHeaderComponent('pnl', column, t),
+			cell: ({ row }) =>
+				getCellComponent('pnl', row.getValue, (value: number) =>
+					value.toLocaleString('en-US', {
+						style: 'currency',
+						currency: 'USD',
+					}),
+				),
+		},
+		{
+			accessorKey: 'rank',
+			header: ({ column }) => getHeaderComponent('rank', column, t),
+			cell: ({ row }) =>
+				getCellComponent('rank', row.getValue, (value: number) =>
+					value.toLocaleString(),
+				),
+		},
+		{
+			accessorKey: 'fees',
+			header: ({ column }) => getHeaderComponent('fees', column, t),
+			cell: ({ row }) =>
+				getCellComponent('fees', row.getValue, (value: number) =>
 					value.toLocaleString('en-US', {
 						style: 'currency',
 						currency: 'USD',
@@ -103,6 +135,16 @@ export function getColumns(
 					}),
 				),
 		},
+		...['days', 'weeks', 'months'].map<ColumnDef<RangerWallet>>(
+			(dateFrame: string) => ({
+				accessorKey: dateFrame,
+				header: ({ column }) => getHeaderComponent(dateFrame, column, t),
+				cell: ({ row }) =>
+					getCellComponent<DateFrame>(dateFrame, row.getValue, data =>
+						DatesComponent(data, dateFrame as 'weeks' | 'days' | 'months'),
+					),
+			}),
+		),
 		{
 			id: 'actions',
 			header: () => <div className="text-center">{t('actions')}</div>,
