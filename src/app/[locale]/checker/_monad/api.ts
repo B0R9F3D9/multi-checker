@@ -70,7 +70,7 @@ async function getTxns(
 }
 
 function processTxns(txns: MonadTxn[], address: string): Partial<MonadWallet> {
-	txns.filter(txn => txn.from === address.toLowerCase());
+	txns = txns.filter(txn => txn.from === address.toLowerCase());
 
 	const result = {
 		txns: txns.length,
