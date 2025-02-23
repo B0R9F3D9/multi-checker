@@ -89,6 +89,7 @@ function processTrades(trades: RangerTrade[]): Partial<RangerWallet> {
 	const result = {
 		trades: trades.length,
 		pnl: 0,
+		tradesVolume: 0,
 		fees: 0,
 		days: [{ date: '', txns: 0 }],
 		weeks: [{ date: '', txns: 0 }],
@@ -96,6 +97,7 @@ function processTrades(trades: RangerTrade[]): Partial<RangerWallet> {
 	};
 
 	for (const trade of trades) {
+		result.tradesVolume += trade.quantity * trade.entry_price;
 		result.pnl += trade.realized_pnl;
 		result.fees += trade.fees_paid;
 
@@ -137,11 +139,11 @@ async function fetchWallet(
 		const leaderboardPos = leaderboard.data.find(w => w.wallet === address);
 		if (!leaderboardPos) throw new Error('Wallet not found in leaderboard.');
 		result.rank = leaderboardPos.position;
-		result.volume = leaderboardPos.trade_volume;
+		result.leaderboardVolume = leaderboardPos.trade_volume;
 	} catch (err) {
 		console.error(err);
 		result.rank = null;
-		result.volume = null;
+		result.leaderboardVolume = null;
 	}
 
 	try {
@@ -165,6 +167,7 @@ async function fetchWallet(
 	} catch (err) {
 		console.error(err);
 		result.trades = null;
+		result.tradesVolume = null;
 		result.pnl = null;
 		result.fees = null;
 		result.days = null;
@@ -189,7 +192,8 @@ export async function fetchWallets(
 				updateWallet(address, {
 					trades: undefined,
 					rank: undefined,
-					volume: undefined,
+					leaderboardVolume: undefined,
+					tradesVolume: undefined,
 					referals: undefined,
 					refVolume: undefined,
 					pnl: undefined,
@@ -209,7 +213,8 @@ export async function fetchWallets(
 				updateWallet(address, {
 					trades: null,
 					rank: null,
-					volume: null,
+					leaderboardVolume: null,
+					tradesVolume: null,
 					referals: null,
 					refVolume: null,
 					pnl: null,

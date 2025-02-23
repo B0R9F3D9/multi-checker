@@ -66,7 +66,9 @@
 		"referals": "Referals",
 		"refVolume": "Referral volume",
 		"trades": "Trades",
-		"pnl": "PnL"
+		"pnl": "PnL",
+		"leaderboardVolume": "Leaderboard volume",
+		"tradesVolume": "Trades volume"
 	},
 	"Projects": {
 		"LayerZero": {
@@ -78,8 +80,11 @@
 		"Odos": {
 			"description": "All transactions and data counted from the last snapshot date, 2024-12-16."
 		},
-		"Jupiter": {
+		"Jupiter Swap": {
 			"description": "Due to the lack of price data during the exchange, trading volume is reported as source volume (how much was spent) and destination volume (how much was received). The actual volume is somewhere in between. All data is from the latest snapshot, 2024-11-01."
+		},
+		"Ranger Finance": {
+			"description": "Due to delays in updating the leaderboard via API, the volume in the checker is displayed based on data from the leaderboard and separately from calculations by deals."
 		}
 	},
 	"AboutPage": {

@@ -1,4 +1,4 @@
-type ProjectCategory = 'swap' | 'bridge' | 'chain' | 'other';
+type ProjectCategory = 'swap' | 'bridge' | 'chain' | 'perp' | 'other';
 type ProjectChain = 'evm' | 'svm' | 'cosmos';
 
 export type Project = {
