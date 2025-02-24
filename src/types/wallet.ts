@@ -2,7 +2,7 @@ import type { BebopWallet } from '@/app/[locale]/checker/_bebop/types';
 import type { EclipseWallet } from '@/app/[locale]/checker/_eclipse/types';
 import type { HyperlaneWallet } from '@/app/[locale]/checker/_hyperlane/types';
 import type { JumperWallet } from '@/app/[locale]/checker/_jumper/types';
-import type { JupiterWallet } from '@/app/[locale]/checker/_jupiter/types';
+import type { JupiterWallet } from '@/app/[locale]/checker/_jupiter-swap/types';
 import type { LayerzeroWallet } from '@/app/[locale]/checker/_layerzero/types';
 import type { MayanWallet } from '@/app/[locale]/checker/_mayan/types';
 import type { MeteoraWallet } from '@/app/[locale]/checker/_meteora/types';
