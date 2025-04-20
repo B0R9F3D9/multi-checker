@@ -1,5 +1,4 @@
 import Image from 'next/image';
-import * as React from 'react';
 import { MdTouchApp } from 'react-icons/md';
 
 import {

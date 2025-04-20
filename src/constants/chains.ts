@@ -1,4 +1,6 @@
-export const CHAINS = [
+import type { Chain } from '@/types/chain';
+
+export const CHAINS: Chain[] = [
 	{
 		name: 'Ethereum',
 		id: 1,
@@ -14,7 +16,7 @@ export const CHAINS = [
 		mayanId: 24,
 	},
 	{
-		name: 'Binance Smart Chain',
+		name: 'BSC',
 		id: 56,
 		image: 'https://icons.llamao.fi/icons/chains/rsz_binance.jpg',
 		layerzeroId: 30102,
@@ -165,6 +167,7 @@ export const CHAINS = [
 		name: 'Aptos',
 		image: 'https://explorer.mayan.finance/assets/aptos.png',
 		mayanId: 22,
+		layerzeroId: 30108,
 	},
 	{
 		name: 'Gravity',
@@ -175,5 +178,53 @@ export const CHAINS = [
 		name: 'ZkFair',
 		image: 'https://cdn.orbiter.finance/icon/chain/42766.svg',
 		id: 42766,
+	},
+	{
+		name: 'Harmony',
+		image: 'https://icons.llamao.fi/icons/chains/rsz_harmony.jpg',
+		id: 1666600000,
+		layerzeroId: 30116,
+	},
+	{
+		name: 'Viction',
+		image: 'https://icons.llamao.fi/icons/chains/rsz_tomochain.jpg',
+		id: 88,
+		layerzeroId: 30196,
+	},
+	{
+		name: 'Fuse',
+		image: 'https://icons.llamao.fi/icons/chains/rsz_fuse.jpg',
+		id: 122,
+		layerzeroId: 30138,
+	},
+	{
+		name: 'Moonriver',
+		image: 'https://icons.llamao.fi/icons/chains/rsz_moonriver.jpg',
+		id: 1285,
+		layerzeroId: 30167,
+	},
+	{
+		name: 'Unichain',
+		image: 'https://icons.llamao.fi/icons/chains/rsz_unichain.jpg',
+		id: 130,
+		layerzeroId: 30320,
+	},
+	{
+		name: 'Ink',
+		image: 'https://icons.llamao.fi/icons/chains/rsz_ink.jpg',
+		id: 57073,
+		layerzeroId: 30339,
+	},
+	{
+		name: 'CoreDAO',
+		image: 'https://icons.llamao.fi/icons/chains/rsz_core.jpg',
+		id: 1116,
+		layerzeroId: 30153,
+	},
+	{
+		name: 'Kaia',
+		image: 'https://icons.llamao.fi/icons/chains/rsz_klaytn.jpg',
+		id: 8217,
+		layerzeroId: 30150,
 	},
 ];
